@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { properties, getTagClass } from '../data/properties'
 
@@ -156,6 +156,13 @@ export default function ExploreGhana() {
   const [selectedRegion, setSelectedRegion] = useState(null)
   const active = REGION_DATA.find(r => r.id === selectedRegion)
   const regionProperties = selectedRegion ? properties.filter(p => p.region === selectedRegion) : []
+  const detailRef = useRef(null)
+
+  useEffect(() => {
+    if (selectedRegion && detailRef.current) {
+      detailRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }, [selectedRegion])
 
   return (
     <div className="min-h-screen bg-vibe-red page-enter">
@@ -194,7 +201,7 @@ export default function ExploreGhana() {
 
       {/* Region detail */}
       {selectedRegion && active && (
-        <section className="px-4 pb-16 max-w-5xl mx-auto">
+        <section ref={detailRef} className="px-4 pb-16 max-w-5xl mx-auto scroll-mt-24">
           <div className={`${active.color} rounded-2xl border-2 border-vibe-navy shadow-card p-6 mb-8`}>
             <div className="flex items-start justify-between mb-3">
               <div>
