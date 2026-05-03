@@ -1,0 +1,193 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Design tokens ─────────────────────────────────────── */
+:root {
+  --red:    #E84422;
+  --blue:   #1E40AF;
+  --yellow: #FBBF24;
+  --navy:   #0E1C40;
+  --pink:   #F9A8D4;
+  --green:  #16A34A;
+  --white:  #FFFFFF;
+}
+
+/* ── Vibe color utilities (supplement Tailwind JIT) ────── */
+.bg-vibe-red    { background-color: #E84422; }
+.bg-vibe-blue   { background-color: #1E40AF; }
+.bg-vibe-yellow { background-color: #FBBF24; }
+.bg-vibe-navy   { background-color: #0E1C40; }
+.bg-vibe-pink   { background-color: #F9A8D4; }
+.bg-vibe-green  { background-color: #16A34A; }
+.bg-vibe-white  { background-color: #FFFFFF; }
+
+.text-vibe-red    { color: #E84422; }
+.text-vibe-blue   { color: #1E40AF; }
+.text-vibe-yellow { color: #FBBF24; }
+.text-vibe-navy   { color: #0E1C40; }
+.text-vibe-pink   { color: #F9A8D4; }
+.text-vibe-green  { color: #16A34A; }
+.text-vibe-white  { color: #FFFFFF; }
+
+.border-vibe-red    { border-color: #E84422; }
+.border-vibe-blue   { border-color: #1E40AF; }
+.border-vibe-yellow { border-color: #FBBF24; }
+.border-vibe-navy   { border-color: #0E1C40; }
+.border-vibe-pink   { border-color: #F9A8D4; }
+.border-vibe-green  { border-color: #16A34A; }
+
+.shadow-card       { box-shadow: 5px 5px 0px #0E1C40; }
+.shadow-card-hover { box-shadow: 8px 8px 0px #0E1C40; }
+.shadow-btn        { box-shadow: 3px 3px 0px #0E1C40; }
+
+.hover\:bg-vibe-yellow:hover { background-color: #FBBF24; }
+.hover\:bg-vibe-navy:hover   { background-color: #0E1C40; }
+.hover\:text-vibe-navy:hover { color: #0E1C40; }
+
+/* ── Fonts ─────────────────────────────────────────────── */
+.font-display { font-family: 'Black Han Sans', Impact, sans-serif; }
+.font-cursive { font-family: 'Caveat', cursive; }
+.font-body    { font-family: 'Nunito', system-ui, sans-serif; }
+
+/* ── Property Card ─────────────────────────────────────── */
+.property-card {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.3s ease;
+  will-change: transform;
+}
+.property-card:hover {
+  transform: translateY(-12px) scale(1.025) rotate(0deg) !important;
+  box-shadow: 8px 8px 0px #0E1C40 !important;
+  z-index: 20;
+}
+.property-card .card-img {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.property-card:hover .card-img {
+  transform: scale(1.08);
+}
+
+/* ── Activity pill ─────────────────────────────────────── */
+.activity-pill {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.activity-pill:hover {
+  transform: translateY(-2px);
+  box-shadow: 3px 3px 0px #0E1C40;
+}
+.activity-pill.active {
+  box-shadow: 3px 3px 0px #0E1C40;
+  transform: translateY(-1px);
+}
+
+/* ── Button base ───────────────────────────────────────── */
+.vibe-btn {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 3px 3px 0px #0E1C40;
+}
+.vibe-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 5px 5px 0px #0E1C40;
+}
+.vibe-btn:active {
+  transform: translateY(1px);
+  box-shadow: 1px 1px 0px #0E1C40;
+}
+
+/* ── Navbar pill ───────────────────────────────────────── */
+.navbar-pill {
+  background: white;
+  border: 2px solid #0E1C40;
+  box-shadow: 4px 4px 0px rgba(14,28,64,0.2);
+}
+
+/* ── Tape effect ───────────────────────────────────────── */
+.tape-left::before,
+.tape-right::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  width: 48px;
+  height: 20px;
+  background: rgba(255,255,255,0.65);
+  border: 1px solid rgba(14,28,64,0.15);
+  border-radius: 2px;
+  z-index: 10;
+}
+.tape-left::before  { left:  20%; transform: rotate(-5deg); }
+.tape-right::after  { right: 20%; transform: rotate(5deg); }
+
+/* ── Polka dot pattern ─────────────────────────────────── */
+.polka-bg {
+  background-image: radial-gradient(circle, rgba(255,255,255,0.15) 1.5px, transparent 1.5px);
+  background-size: 18px 18px;
+}
+
+/* ── Adinkra geo accent ────────────────────────────────── */
+.adinkra-accent {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='10' fill='none' stroke='white' stroke-width='1' opacity='0.08'/%3E%3Ccircle cx='24' cy='24' r='5' fill='none' stroke='white' stroke-width='1' opacity='0.06'/%3E%3Cline x1='24' y1='14' x2='24' y2='34' stroke='white' stroke-width='0.5' opacity='0.05'/%3E%3Cline x1='14' y1='24' x2='34' y2='24' stroke='white' stroke-width='0.5' opacity='0.05'/%3E%3C/svg%3E");
+}
+
+/* ── Tag pill colors ───────────────────────────────────── */
+.tag-hiking    { background: #FBBF24; color: #0E1C40; }
+.tag-beach     { background: #1E40AF; color: white; }
+.tag-nature    { background: #16A34A; color: white; }
+.tag-lakeside  { background: #0EA5E9; color: white; }
+.tag-cultural  { background: #92400E; color: white; }
+.tag-nightlife { background: #7C3AED; color: white; }
+.tag-eco       { background: #065F46; color: white; }
+.tag-watersports { background: #0891B2; color: white; }
+.tag-food      { background: #DC2626; color: white; }
+.tag-mountain  { background: #78350F; color: white; }
+.tag-waterfall { background: #0369A1; color: white; }
+.tag-wildlife  { background: #B45309; color: white; }
+.tag-chill     { background: #F9A8D4; color: #0E1C40; }
+.tag-party     { background: #7C3AED; color: white; }
+
+/* ── Page transitions ──────────────────────────────────── */
+.page-enter {
+  animation: slideUp 0.4s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+
+/* ── Heart save button ─────────────────────────────────── */
+.save-btn {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.save-btn:hover  { transform: scale(1.3); }
+.save-btn.saved  { color: #DC2626; }
+
+/* ── Scrollbar ─────────────────────────────────────────── */
+* { scrollbar-width: thin; scrollbar-color: rgba(14,28,64,0.2) transparent; }
+
+/* ── Links ─────────────────────────────────────────────── */
+a { text-decoration: none; color: inherit; }
+button { cursor: pointer; }
+
+/* ── Hero text stroke ──────────────────────────────────── */
+.text-stroke {
+  -webkit-text-stroke: 2px #0E1C40;
+}
+
+/* ── Scroll row (no scrollbar) ─────────────────────────── */
+.scroll-row {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scroll-row::-webkit-scrollbar { display: none; }
+
+/* ── Region map card hover ─────────────────────────────── */
+.region-card {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+.region-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 8px 8px 0px #0E1C40;
+}
+
+/* ── Reaction button ───────────────────────────────────── */
+.react-btn {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease;
+}
+.react-btn:hover  { transform: scale(1.2); }
+.react-btn.active { background: #0E1C40; color: white; }

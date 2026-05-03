@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "getaway",
+      "runtimeExecutable": "/Users/mac/.nvm/versions/node/v20.19.0/bin/node",
+      "runtimeArgs": ["node_modules/vite/bin/vite.js", "--port", "5174"],
+      "cwd": "/Users/mac/Documents/projects/getaway",
+      "port": 5174
+    }
+  ]
+}
