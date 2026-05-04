@@ -15,9 +15,11 @@ export default function PropertyCard({ property: p, style }) {
         <div className="relative h-52 overflow-hidden border-b-2 border-vibe-navy rounded-t-xl2">
           <img src={p.image} alt={p.name} className="card-img w-full h-full object-cover" loading="lazy" />
 
-          <span className={`absolute top-2 right-2 ${p.priceTag} font-display text-xs px-2 py-0.5 rounded-full border border-vibe-navy`}>
-            GHS {p.priceGHS.toLocaleString()}/night
-          </span>
+          {p.type === 'Airbnb' && (
+            <span className={`absolute top-2 right-2 ${p.priceTag} font-display text-xs px-2 py-0.5 rounded-full border border-vibe-navy`}>
+              GHS {p.priceGHS.toLocaleString()}/night
+            </span>
+          )}
 
           {p.verified && (
             <span className="absolute bottom-2 left-2 bg-white text-vibe-navy font-body text-xs font-bold px-2 py-0.5 rounded-full border border-vibe-navy">
@@ -60,9 +62,6 @@ export default function PropertyCard({ property: p, style }) {
             {p.tags.slice(0, 2).map(tag => (
               <span key={tag} className={`${getTagClass(tag)} font-body text-xs font-bold px-2 py-0.5 rounded-full`}>{tag}</span>
             ))}
-            {p.minStay > 1 && (
-              <span className="bg-vibe-navy text-white font-body text-xs font-bold px-2 py-0.5 rounded-full">{p.minStay}+ nights</span>
-            )}
           </div>
 
           <div className="pt-2 border-t border-gray-100">

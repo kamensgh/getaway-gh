@@ -1,13 +1,18 @@
 import { useParams, Link } from 'react-router-dom'
 import { useState, useEffect, useCallback } from 'react'
 import { properties, getTagClass } from '../data/properties'
+import { CONTACTS } from '../data/contacts'
 import { useTripBoard } from '../context/TripBoardContext'
 import PropertyCard from '../components/PropertyCard'
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
 function ContactModal({ p, onClose }) {
+  const contact = CONTACTS[p.id] || {}
+  const whatsappNum = contact.phone ? contact.phone.replace(/\s+/g, '').replace('+', '') : null
   const whatsappMsg = encodeURIComponent(`Hi, I'm interested in ${p.name} (GHS ${p.priceGHS.toLocaleString()}/night). Could you share more details? Found on Getaway.gh`)
+  const isAirbnb = !!p.airbnbUrl
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4" onClick={onClose}>
       <div className="absolute inset-0 bg-vibe-navy/70 backdrop-blur-sm" />
@@ -15,28 +20,57 @@ function ContactModal({ p, onClose }) {
         <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 hover:bg-vibe-red hover:text-white flex items-center justify-center font-bold text-gray-500 transition-colors">✕</button>
 
         <p className="font-cursive text-vibe-blue text-lg mb-1">get in touch</p>
-        <h2 className="font-display text-2xl text-vibe-navy uppercase leading-tight mb-1">{p.name}</h2>
-        <p className="font-body text-xs text-gray-400 mb-5">📍 {p.district}, {p.region} · GHS {p.priceGHS.toLocaleString()}/night</p>
+        <h2 className="font-display text-xl text-vibe-navy uppercase leading-tight mb-1">{p.name}</h2>
+        <p className="font-body text-xs text-gray-400 mb-5">
+          📍 {p.district}, {p.region}{isAirbnb ? ` · GHS ${p.priceGHS.toLocaleString()}/night` : ''}
+        </p>
 
-        <div className="space-y-3">
-          {/* WhatsApp */}
-          <a href={`https://wa.me/?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer"
-            className="flex items-center gap-3 w-full py-3 px-4 rounded-xl border-2 border-vibe-navy bg-green-500 text-white font-body font-bold text-sm hover:bg-green-600 transition-colors">
-            <svg className="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-              <path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.553 4.122 1.523 5.859L0 24l6.335-1.509A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.006-1.374l-.359-.213-3.721.887.929-3.613-.234-.372A9.818 9.818 0 0112 2.182c5.422 0 9.818 4.396 9.818 9.818S17.422 21.818 12 21.818z"/>
-            </svg>
-            Contact via WhatsApp
-          </a>
+        {/* Contact details block */}
+        <div className="bg-gray-50 rounded-xl border border-gray-200 p-4 mb-4 space-y-2.5">
+          {contact.phone && (
+            <a href={`tel:${contact.phone.replace(/\s+/g, '')}`}
+              className="flex items-center gap-3 text-vibe-navy hover:text-vibe-blue transition-colors group">
+              <span className="w-8 h-8 bg-vibe-navy text-white rounded-full flex items-center justify-center shrink-0 text-sm group-hover:bg-vibe-blue transition-colors">📞</span>
+              <div>
+                <p className="font-body text-xs text-gray-400 leading-none mb-0.5">Phone</p>
+                <p className="font-body font-bold text-sm">{contact.phone}</p>
+              </div>
+            </a>
+          )}
+          {contact.email && (
+            <a href={`mailto:${contact.email}`}
+              className="flex items-center gap-3 text-vibe-navy hover:text-vibe-blue transition-colors group">
+              <span className="w-8 h-8 bg-vibe-navy text-white rounded-full flex items-center justify-center shrink-0 text-sm group-hover:bg-vibe-blue transition-colors">✉️</span>
+              <div>
+                <p className="font-body text-xs text-gray-400 leading-none mb-0.5">Email</p>
+                <p className="font-body font-bold text-sm break-all">{contact.email}</p>
+              </div>
+            </a>
+          )}
+          {contact.website && (
+            <a href={contact.website} target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-3 text-vibe-navy hover:text-vibe-blue transition-colors group">
+              <span className="w-8 h-8 bg-vibe-navy text-white rounded-full flex items-center justify-center shrink-0 text-sm group-hover:bg-vibe-blue transition-colors">🌐</span>
+              <div>
+                <p className="font-body text-xs text-gray-400 leading-none mb-0.5">{isAirbnb ? 'Airbnb listing' : 'Website'}</p>
+                <p className="font-body font-bold text-sm truncate max-w-[200px]">
+                  {isAirbnb ? 'View on Airbnb →' : contact.website.replace('https://', '')}
+                </p>
+              </div>
+            </a>
+          )}
+        </div>
 
-          {/* Airbnb link */}
-          {p.airbnbUrl && (
-            <a href={p.airbnbUrl} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-3 w-full py-3 px-4 rounded-xl border-2 border-vibe-navy bg-vibe-red text-white font-body font-bold text-sm hover:opacity-90 transition-opacity">
-              <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm.36 18.48c-.48.6-1.26.6-1.74 0-1.98-2.52-5.88-7.08-5.88-9.96C4.74 5.76 8.1 3.6 12 3.6s7.26 2.16 7.26 4.92c0 2.88-3.9 7.44-5.88 9.96h-.02zm0-7.32c1.08 0 1.92-.84 1.92-1.92S13.44 7.32 12 7.32s-1.92.84-1.92 1.92.84 1.92 1.92 1.92z"/>
+        <div className="space-y-2.5">
+          {/* WhatsApp direct */}
+          {whatsappNum && (
+            <a href={`https://wa.me/${whatsappNum}?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-3 w-full py-3 px-4 rounded-xl border-2 border-vibe-navy bg-green-500 text-white font-body font-bold text-sm hover:bg-green-600 transition-colors">
+              <svg className="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                <path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.553 4.122 1.523 5.859L0 24l6.335-1.509A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.006-1.374l-.359-.213-3.721.887.929-3.613-.234-.372A9.818 9.818 0 0112 2.182c5.422 0 9.818 4.396 9.818 9.818S17.422 21.818 12 21.818z"/>
               </svg>
-              View on Airbnb
+              Message on WhatsApp
             </a>
           )}
 
@@ -202,12 +236,9 @@ export default function PropertyDetail() {
             <p className="font-body text-sm font-bold text-vibe-yellow mb-1">{p.badge}</p>
             <h1 className="font-display text-4xl sm:text-5xl text-white uppercase leading-tight mb-2">{p.name}</h1>
 
-            {/* Location + verified */}
+            {/* Location */}
             <div className="flex flex-wrap items-center gap-3 mb-4">
               <p className="font-body font-bold text-white/80 text-sm uppercase tracking-wide">📍 {p.district}, {p.region}</p>
-              {p.verified && (
-                <span className="bg-white text-vibe-navy font-body text-xs font-bold px-2.5 py-1 rounded-full border border-vibe-navy">✓ Verified by Getaway.gh</span>
-              )}
             </div>
 
             {/* Tags */}
@@ -355,17 +386,16 @@ export default function PropertyDetail() {
           <div className="lg:w-80 shrink-0">
             <div className="sticky top-24 space-y-4">
               <div className="bg-white rounded-xl border-2 border-vibe-navy shadow-card p-5">
-                <div className="mb-5">
-                  <span className="font-body text-xs text-gray-500">from</span>
-                  <div className="flex items-baseline gap-2">
-                    <span className="font-display text-3xl text-vibe-navy">GHS {p.priceGHS.toLocaleString()}</span>
-                    <span className="font-body text-sm text-gray-400">/ night</span>
+                {p.type === 'Airbnb' && (
+                  <div className="mb-5">
+                    <span className="font-body text-xs text-gray-500">from</span>
+                    <div className="flex items-baseline gap-2">
+                      <span className="font-display text-3xl text-vibe-navy">GHS {p.priceGHS.toLocaleString()}</span>
+                      <span className="font-body text-sm text-gray-400">/ night</span>
+                    </div>
+                    <span className="font-body text-xs text-gray-400">≈ ${p.priceUSD} USD per night</span>
                   </div>
-                  <span className="font-body text-xs text-gray-400">≈ ${p.priceUSD} USD per night</span>
-                  {p.minStay > 1 && (
-                    <p className="font-body text-xs text-vibe-red font-bold mt-1">Minimum {p.minStay} nights</p>
-                  )}
-                </div>
+                )}
 
                 <button onClick={() => setShowContact(true)}
                   className="vibe-btn w-full block text-center bg-vibe-blue text-white font-display text-base py-3 rounded-full border-2 border-vibe-navy mb-3">

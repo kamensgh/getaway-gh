@@ -76,9 +76,11 @@ export default function TripBoard() {
                   <Link to={`/property/${property.id}`}>
                     <img src={property.image} alt={property.name} className="card-img w-full h-full object-cover" />
                   </Link>
-                  <span className={`absolute top-3 right-3 ${property.priceTag} font-display text-xs px-2.5 py-1 rounded-full border border-vibe-navy`}>
-                    GHS {property.priceGHS.toLocaleString()}
-                  </span>
+                  {property.type === 'Airbnb' && (
+                    <span className={`absolute top-3 right-3 ${property.priceTag} font-display text-xs px-2.5 py-1 rounded-full border border-vibe-navy`}>
+                      GHS {property.priceGHS.toLocaleString()}
+                    </span>
+                  )}
                   <button onClick={() => toggle(property.id)}
                     className="absolute top-3 left-3 w-8 h-8 rounded-full bg-white border-2 border-vibe-navy flex items-center justify-center text-vibe-red text-xs font-black hover:bg-red-50 transition-colors shadow-btn"
                     title="Remove">✕</button>
