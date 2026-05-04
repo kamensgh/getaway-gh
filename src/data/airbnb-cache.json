@@ -1,0 +1,47 @@
+{
+  "fetched": "2026-05-03",
+  "regions": {
+    "Ada Foah": [
+      { "id": "1477590817264888617", "name": "The Kikiko Beach House", "priceUSD": 94, "rating": 4.9, "coords": { "lat": 5.7818, "lng": 0.6273 }, "url": "https://www.airbnb.com/rooms/1477590817264888617" },
+      { "id": "cushnie", "name": "Cushnie Resort & Spa", "priceUSD": 40, "coords": { "lat": 5.782, "lng": 0.626 } },
+      { "id": "volta-river-bay", "name": "Volta River Bay House", "priceUSD": 201, "coords": { "lat": 5.785, "lng": 0.628 } }
+    ],
+    "Busua": [
+      { "id": "busua-bliss", "name": "Busua Bliss", "priceUSD": 42, "badge": "Guest favorite", "coords": { "lat": 4.8088, "lng": -1.9361 } },
+      { "id": "trinity-beach", "name": "Trinity Beach Villas", "priceUSD": 46, "coords": { "lat": 4.808, "lng": -1.937 } },
+      { "id": "boko-boko", "name": "Boko Boko Guesthouse", "priceUSD": 40, "badge": "Superhost", "coords": { "lat": 4.810, "lng": -1.935 } }
+    ],
+    "Cape Coast": [
+      { "id": "coastal-retreat-cc", "name": "Coastal Retreat", "priceUSD": 451, "rating": 4.9, "reviews": 49, "coords": { "lat": 5.1054, "lng": -1.2466 } },
+      { "id": "lovely-getaway-cc", "name": "Lovely Getaway Steps from Ocean", "priceUSD": 217, "rating": 4.9, "reviews": 82, "coords": { "lat": 5.102, "lng": -1.248 } }
+    ],
+    "Kokrobite": [
+      { "id": "1033366517212822912", "name": "Gold Shore Villa-Kokrobite Beach", "priceUSD": 222, "badge": "Guest favorite", "rating": 4.96, "reviews": 27, "coords": { "lat": 5.495, "lng": -0.3662 }, "url": "https://www.airbnb.com/rooms/1033366517212822912", "thumbnail": "https://mcp.openbnb.ai/image?url=https%3A%2F%2Fa0.muscache.com%2Fim%2Fpictures%2Fhosting%2FHosting-U3RheVN1cHBseUxpc3Rpbmc6MTAzMzM2NjUxNzIxMjgyMjkxMg%3D%3D%2Foriginal%2Fc4944979-3a8e-459e-b1c3-9361c50b004b.jpeg" },
+      { "id": "1071549023411755958", "name": "Tropical Beach Haven", "priceUSD": 171, "badge": "Superhost", "rating": 4.83, "reviews": 30, "coords": { "lat": 5.49252, "lng": -0.37046 }, "url": "https://www.airbnb.com/rooms/1071549023411755958", "thumbnail": "https://mcp.openbnb.ai/image?url=https%3A%2F%2Fa0.muscache.com%2Fim%2Fpictures%2Fmiso%2FHosting-1071549023411755958%2Foriginal%2F3e863ef5-1f57-4dfe-ae51-3f0b5d8e8e77.jpeg" },
+      { "id": "570879428120020488", "name": "Seaview 3BR Apartment with Pool", "priceUSD": 40, "badge": "Guest favorite", "rating": 4.86, "reviews": 29, "coords": { "lat": 5.5064, "lng": -0.3714 }, "url": "https://www.airbnb.com/rooms/570879428120020488", "thumbnail": "https://mcp.openbnb.ai/image?url=https%3A%2F%2Fa0.muscache.com%2Fim%2Fpictures%2Fmiso%2FHosting-570879428120020488%2Foriginal%2F4844ad8b-c945-4f10-831f-7b6595f97451.jpeg" },
+      { "id": "42269734", "name": "Dizzy Lizzie's Beach Resort BLUE", "priceUSD": 36, "badge": "Superhost", "rating": 4.58, "reviews": 36, "coords": { "lat": 5.49503, "lng": -0.36538 }, "url": "https://www.airbnb.com/rooms/42269734", "thumbnail": "https://mcp.openbnb.ai/image?url=https%3A%2F%2Fa0.muscache.com%2Fim%2Fpictures%2F3a8e19bc-6e8b-4d33-a225-3ebccde75571.jpg" }
+    ],
+    "Kumasi": [
+      { "id": "1415650490501956222", "name": "Charming Kumasi Getaway with Starlink", "priceUSD": 41, "badge": "Guest favorite", "rating": 4.95, "reviews": 37, "coords": { "lat": 6.6964, "lng": -1.5765 }, "url": "https://www.airbnb.com/rooms/1415650490501956222", "thumbnail": "https://mcp.openbnb.ai/image?url=https%3A%2F%2Fa0.muscache.com%2Fim%2Fpictures%2Fhosting%2FHosting-U3RheVN1cHBseUxpc3Rpbmc6MTQxNTA4OTQ0OTQzMTQ0ODMzMA%3D%3D%2Foriginal%2F7b145fd2-3962-49ed-acfb-01cd9a96270e.jpeg" },
+      { "id": "1166259496830621028", "name": "Nanani Luxury Villa - 3BR + Private Cinema", "priceUSD": 116, "badge": "Guest favorite", "rating": 5.0, "reviews": 11, "coords": { "lat": 6.6565, "lng": -1.6991 }, "url": "https://www.airbnb.com/rooms/1166259496830621028", "thumbnail": "https://mcp.openbnb.ai/image?url=https%3A%2F%2Fa0.muscache.com%2Fim%2Fpictures%2Fhosting%2FHosting-U3RheVN1cHBseUxpc3Rpbmc6MTE2NjI1OTQ5NjgzMDYyMTAyOA%3D%3D%2Foriginal%2Ffed09893-6e69-43b6-b1d2-ffa3b5ae7cb7.jpeg" }
+    ],
+    "Hohoe": [
+      { "id": "17762601", "name": "Village life in Ghana", "priceUSD": 57, "rating": 4.5, "reviews": 6, "coords": { "lat": 7.17231, "lng": 0.48469 }, "url": "https://www.airbnb.com/rooms/17762601", "thumbnail": "https://mcp.openbnb.ai/image?url=https%3A%2F%2Fa0.muscache.com%2Fim%2Fpictures%2F024b8854-8fdb-436b-91c6-b91ee52358ee.jpg" },
+      { "id": "1431911595624467606", "name": "Kakiri Eco-Retreat", "priceUSD": 81, "coords": { "lat": 6.9414, "lng": 0.6339 }, "url": "https://www.airbnb.com/rooms/1431911595624467606", "thumbnail": "https://mcp.openbnb.ai/image?url=https%3A%2F%2Fa0.muscache.com%2Fim%2Fpictures%2Fhosting%2FHosting-1431911595624467606%2Foriginal%2Fe11d777e-811e-42f4-8121-6bd29bfc62dd.jpeg" }
+    ],
+    "Aburi": [
+      { "id": "1225697238694437763", "name": "THE FRAME — A-Frame Cabin on a Mountain", "priceUSD": 153, "badge": "Guest favorite", "rating": 4.95, "reviews": 169, "coords": { "lat": 5.79519, "lng": -0.18951 }, "url": "https://www.airbnb.com/rooms/1225697238694437763", "thumbnail": "https://mcp.openbnb.ai/image?url=https%3A%2F%2Fa0.muscache.com%2Fim%2Fpictures%2Fhosting%2FHosting-1031193111201672701%2Foriginal%2F3dbcf4ee-1bd3-4e45-879a-28150748482b.jpeg" },
+      { "id": "1228336006083462110", "name": "3 BR Tranquil Luna Home with Pool (Peduase/Aburi)", "priceUSD": 138, "badge": "Guest favorite", "rating": 4.96, "reviews": 179, "coords": { "lat": 5.79527, "lng": -0.19115 }, "url": "https://www.airbnb.com/rooms/1228336006083462110", "thumbnail": "https://mcp.openbnb.ai/image?url=https%3A%2F%2Fa0.muscache.com%2Fim%2Fpictures%2Fhosting%2FHosting-U3RheVN1cHBseUxpc3Rpbmc6MTIyODMzNjAwNjA4MzQ2MjExMA%253D%253D%2Foriginal%2F6e8b2f98-4e98-4d72-87d2-f8aa532958d1.jpeg" },
+      { "id": "1223105072572204917", "name": "YeepsHive Mansion — Infinity Pool & Games Lounge", "priceUSD": 206, "badge": "Guest favorite", "rating": 5.0, "reviews": 44, "coords": { "lat": 5.74298, "lng": -0.18478 }, "url": "https://www.airbnb.com/rooms/1223105072572204917", "thumbnail": "https://mcp.openbnb.ai/image?url=https%3A%2F%2Fa0.muscache.com%2Fim%2Fpictures%2Fhosting%2FHosting-U3RheVN1cHBseUxpc3Rpbmc6MTIyMzEwNTA3MjU3MjIwNDkxNw%3D%3D%2Foriginal%2F4684aa12-f6ec-4951-88ff-d99e5471e7a8.jpeg" }
+    ],
+    "Akosombo": [
+      { "id": "718138399728489170", "name": "Hidden Haven Cabins", "priceUSD": 136, "badge": "Guest favorite", "rating": 4.91, "reviews": 257, "coords": { "lat": 6.2462, "lng": 0.0914 }, "url": "https://www.airbnb.com/rooms/718138399728489170", "thumbnail": "https://mcp.openbnb.ai/image?url=https%3A%2F%2Fa0.muscache.com%2Fim%2Fpictures%2Fmiso%2FHosting-718138399728489170%2Foriginal%2F10fa03a3-7ad4-4993-be9a-67f0d1f3bc93.jpeg" },
+      { "id": "52091756", "name": "River Cottage No.1 Akosombo", "priceUSD": 141, "badge": "Guest favorite", "rating": 4.92, "reviews": 218, "coords": { "lat": 6.26641, "lng": 0.07838 }, "url": "https://www.airbnb.com/rooms/52091756", "thumbnail": "https://mcp.openbnb.ai/image?url=https%3A%2F%2Fa0.muscache.com%2Fim%2Fpictures%2Fmiso%2FHosting-52091756%2Foriginal%2F688eae0a-1f0a-4ae1-9e2f-148d5f25b2a7.jpeg" },
+      { "id": "574492943797045839", "name": "The Luxe River Camp @ Mangoase", "priceUSD": 190, "badge": "Guest favorite", "rating": 4.98, "reviews": 164, "coords": { "lat": 6.27706, "lng": 0.06524 }, "url": "https://www.airbnb.com/rooms/574492943797045839", "thumbnail": "https://mcp.openbnb.ai/image?url=https%3A%2F%2Fa0.muscache.com%2Fim%2Fpictures%2F633f0cc5-dee3-4184-9152-1e88acd4a5e1.jpg" }
+    ],
+    "Tamale": [
+      { "id": "1131867580470822789", "name": "The African Palace — Free Airport Shuttle", "priceUSD": 51, "badge": "Guest favorite", "rating": 4.97, "reviews": 37, "coords": { "lat": 9.40111, "lng": -0.84378 }, "url": "https://www.airbnb.com/rooms/1131867580470822789", "thumbnail": "https://mcp.openbnb.ai/image?url=https%3A%2F%2Fa0.muscache.com%2Fim%2Fpictures%2Fhosting%2FHosting-1131867580470822789%2Foriginal%2F638ef4a2-2615-4d69-9243-78c7888df2c9.jpeg" },
+      { "id": "8356649", "name": "Stay in North-Ghanaian Hut (Duu)", "priceUSD": 27, "rating": 4.75, "reviews": 32, "coords": { "lat": 9.43766, "lng": -0.88332 }, "url": "https://www.airbnb.com/rooms/8356649", "thumbnail": "https://mcp.openbnb.ai/image?url=https%3A%2F%2Fa0.muscache.com%2Fim%2Fpictures%2Fb7f4854e-e9d1-4aae-88d9-b6b0035ba21a.jpg" }
+    ]
+  }
+}
