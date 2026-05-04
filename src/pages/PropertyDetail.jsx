@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { properties, getTagClass } from '../data/properties'
 import { useTripBoard } from '../context/TripBoardContext'
 import PropertyCard from '../components/PropertyCard'
@@ -60,6 +60,23 @@ export default function PropertyDetail() {
   const [imgIdx,       setImgIdx]       = useState(0)
   const [showAll,      setShowAll]      = useState(false)
   const [showContact,  setShowContact]  = useState(false)
+  const [galleryOpen,  setGalleryOpen]  = useState(false)
+
+  const imgs = p ? (p.images?.length > 0 ? p.images : [p.image]) : []
+
+  const openGallery = useCallback((i = 0) => { setImgIdx(i); setGalleryOpen(true) }, [])
+  const closeGallery = useCallback(() => setGalleryOpen(false), [])
+
+  useEffect(() => {
+    if (!galleryOpen) return
+    const onKey = (e) => {
+      if (e.key === 'Escape') closeGallery()
+      if (e.key === 'ArrowRight') setImgIdx(i => (i + 1) % imgs.length)
+      if (e.key === 'ArrowLeft') setImgIdx(i => (i - 1 + imgs.length) % imgs.length)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [galleryOpen, imgs.length, closeGallery])
 
   if (!p) {
     return (
@@ -80,6 +97,37 @@ export default function PropertyDetail() {
 
       {showContact && <ContactModal p={p} onClose={() => setShowContact(false)} />}
 
+      {/* ── LIGHTBOX ─────────────────────────────────────── */}
+      {galleryOpen && (
+        <div className="fixed inset-0 z-[60] bg-black/95 flex flex-col items-center justify-center" onClick={closeGallery}>
+          <button onClick={closeGallery}
+            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-lg transition-colors z-10">✕</button>
+          <p className="absolute top-5 left-1/2 -translate-x-1/2 text-white/50 font-body text-sm z-10">
+            {imgIdx + 1} / {imgs.length}
+          </p>
+
+          {imgs.length > 1 && <>
+            <button onClick={e => { e.stopPropagation(); setImgIdx(i => (i - 1 + imgs.length) % imgs.length) }}
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-3xl transition-colors z-10">‹</button>
+            <button onClick={e => { e.stopPropagation(); setImgIdx(i => (i + 1) % imgs.length) }}
+              className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-3xl transition-colors z-10">›</button>
+          </>}
+
+          <img src={imgs[imgIdx]} alt="" className="max-h-[80vh] max-w-[88vw] object-contain rounded-xl" onClick={e => e.stopPropagation()} />
+
+          {imgs.length > 1 && (
+            <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2 overflow-x-auto max-w-[90vw] px-2" onClick={e => e.stopPropagation()}>
+              {imgs.map((img, i) => (
+                <button key={i} onClick={() => setImgIdx(i)}
+                  className={`shrink-0 w-16 h-11 rounded-lg overflow-hidden border-2 transition-all ${i === imgIdx ? 'border-white opacity-100' : 'border-white/20 opacity-50 hover:opacity-80'}`}>
+                  <img src={img} className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* ── BREADCRUMB ───────────────────────────────────── */}
       <div className="pt-24 pb-2 px-4 max-w-5xl mx-auto">
         <nav className="flex items-center gap-2 font-body text-xs text-white/70 flex-wrap">
@@ -95,24 +143,52 @@ export default function PropertyDetail() {
 
       {/* ── PHOTO GALLERY ────────────────────────────────── */}
       <div className="px-4 pb-6 max-w-5xl mx-auto">
-        <div className="relative rounded-2xl overflow-hidden border-2 border-vibe-navy shadow-card h-72 sm:h-96">
-          <img src={p.images[imgIdx] || p.image} alt={p.name} className="w-full h-full object-cover" />
 
-          {p.images.length > 1 && (
-            <>
-              <button onClick={() => setImgIdx(i => (i - 1 + p.images.length) % p.images.length)}
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white border-2 border-vibe-navy rounded-full flex items-center justify-center font-bold text-vibe-navy hover:bg-vibe-yellow transition-colors">‹</button>
-              <button onClick={() => setImgIdx(i => (i + 1) % p.images.length)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white border-2 border-vibe-navy rounded-full flex items-center justify-center font-bold text-vibe-navy hover:bg-vibe-yellow transition-colors">›</button>
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-                {p.images.map((_, i) => (
-                  <button key={i} onClick={() => setImgIdx(i)}
-                    className={`w-2 h-2 rounded-full border border-white transition-all ${i === imgIdx ? 'bg-white scale-125' : 'bg-white/40'}`} />
-                ))}
-              </div>
-            </>
-          )}
+        {/* Mobile: swipeable slider */}
+        <div className="sm:hidden relative rounded-2xl overflow-hidden border-2 border-vibe-navy shadow-card h-72">
+          <img src={imgs[imgIdx]} alt={p.name} className="w-full h-full object-cover cursor-pointer" onClick={() => openGallery(imgIdx)} />
+          {imgs.length > 1 && <>
+            <button onClick={() => setImgIdx(i => (i - 1 + imgs.length) % imgs.length)}
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white border-2 border-vibe-navy rounded-full flex items-center justify-center font-bold text-vibe-navy hover:bg-vibe-yellow transition-colors">‹</button>
+            <button onClick={() => setImgIdx(i => (i + 1) % imgs.length)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white border-2 border-vibe-navy rounded-full flex items-center justify-center font-bold text-vibe-navy hover:bg-vibe-yellow transition-colors">›</button>
+            <span className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/50 text-white font-body text-xs px-2.5 py-1 rounded-full">{imgIdx + 1} / {imgs.length}</span>
+          </>}
+          <button onClick={() => openGallery(0)}
+            className="absolute bottom-3 right-3 bg-white text-vibe-navy font-body text-xs font-bold px-3 py-1.5 rounded-xl border border-vibe-navy hover:bg-vibe-yellow transition-colors">
+            ⊞ All photos
+          </button>
         </div>
+
+        {/* Desktop: Airbnb grid */}
+        <div className="hidden sm:block relative rounded-2xl overflow-hidden border-2 border-vibe-navy shadow-card">
+          <div className="grid grid-cols-4 grid-rows-2 gap-0.5 h-[440px] bg-vibe-navy">
+            {/* Main image — left half */}
+            <button className="col-span-2 row-span-2 relative overflow-hidden group" onClick={() => openGallery(0)}>
+              <img src={imgs[0]} alt={p.name} className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500" />
+            </button>
+            {/* 4 thumbnail slots */}
+            {[1, 2, 3, 4].map(i => (
+              <button key={i} onClick={() => openGallery(i < imgs.length ? i : 0)}
+                className="relative overflow-hidden group">
+                {i < imgs.length
+                  ? <img src={imgs[i]} alt="" className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-300" />
+                  : <div className="w-full h-full bg-gray-900/40" />
+                }
+              </button>
+            ))}
+          </div>
+          {/* Show all photos button — bottom right, over last cell */}
+          <button onClick={() => openGallery(0)}
+            className="absolute bottom-4 right-4 bg-white text-vibe-navy font-body text-sm font-bold px-4 py-2.5 rounded-xl border-2 border-vibe-navy hover:bg-vibe-yellow transition-colors flex items-center gap-2 shadow-btn">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+            </svg>
+            Show all photos
+          </button>
+        </div>
+
       </div>
 
       {/* ── MAIN CONTENT ─────────────────────────────────── */}
