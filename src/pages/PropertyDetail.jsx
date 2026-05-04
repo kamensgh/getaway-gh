@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom'
 import { useState, useEffect, useCallback } from 'react'
 import { properties, getTagClass } from '../data/properties'
 import { CONTACTS } from '../data/contacts'
+import { getFestivals } from '../data/festivals'
 import { useTripBoard } from '../context/TripBoardContext'
 import PropertyCard from '../components/PropertyCard'
 
@@ -349,6 +350,27 @@ export default function PropertyDetail() {
                 ))}
               </div>
             </div>
+
+            {/* Festivals & events */}
+            {getFestivals(p.id).length > 0 && (
+              <div className="bg-vibe-yellow rounded-xl border-2 border-vibe-navy shadow-card p-5 mb-6">
+                <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-4">🎉 What's on nearby</p>
+                <div className="space-y-4">
+                  {getFestivals(p.id).map((f, i) => (
+                    <div key={i} className="flex gap-3">
+                      <span className="text-2xl shrink-0 mt-0.5">{f.emoji}</span>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                          <p className="font-display text-sm text-vibe-navy uppercase leading-tight">{f.name}</p>
+                          <span className="font-body text-[10px] font-extrabold bg-vibe-navy text-white px-2 py-0.5 rounded-full">{f.month}</span>
+                        </div>
+                        <p className="font-body text-xs text-vibe-navy/80 leading-relaxed">{f.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Nearby excursions */}
             <div className="bg-white rounded-xl border-2 border-vibe-navy shadow-card p-5 mb-6">
