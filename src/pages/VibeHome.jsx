@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import PropertyCard from '../components/PropertyCard'
 import ActivityFilter from '../components/ActivityFilter'
 import { properties, REGIONS, TYPES, EDITORIAL_PICKS } from '../data/properties'
+import socialFeed from '../data/social-feed.json'
 
 const TAGLINES = [
   'Where in Ghana are you escaping to?',
@@ -187,6 +188,64 @@ export default function VibeHome() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ── TRENDING ON SOCIAL ───────────────────────────── */}
+      <section className="px-4 py-12 bg-vibe-red">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-end justify-between mb-6">
+            <div>
+              <p className="font-cursive text-vibe-yellow text-xl mb-1">spotted in the wild</p>
+              <h2 className="font-display text-4xl sm:text-5xl text-white uppercase leading-tight">
+                TRENDING<br />ON SOCIAL
+              </h2>
+            </div>
+            <div className="hidden sm:flex items-center gap-2 shrink-0">
+              <span className="bg-[#EE1D52] text-white font-body font-extrabold text-xs px-3 py-1 rounded-full border-2 border-vibe-navy">TikTok</span>
+              <span className="bg-[#E1306C] text-white font-body font-extrabold text-xs px-3 py-1 rounded-full border-2 border-vibe-navy">Instagram</span>
+            </div>
+          </div>
+
+          {socialFeed.posts.length === 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {[1,2,3,4].map(i => (
+                <div key={i} className="bg-white/10 rounded-xl border-2 border-white/20 aspect-[9/16] flex flex-col items-center justify-center gap-2 animate-pulse">
+                  <span className="text-white/30 text-3xl">📱</span>
+                  <p className="font-body text-white/30 text-xs font-bold">Loading posts...</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {socialFeed.posts.slice(0, 8).map(post => (
+                <a key={post.id} href={post.url} target="_blank" rel="noopener noreferrer"
+                  className="group relative bg-vibe-navy rounded-xl border-2 border-vibe-navy overflow-hidden shadow-card block aspect-[9/16]">
+                  {post.thumbnail && (
+                    <img src={post.thumbnail} alt={post.caption || 'Social post'}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  <div className="absolute top-2 left-2">
+                    {post.platform === 'tiktok' ? (
+                      <span className="bg-[#EE1D52] text-white font-body font-extrabold text-[10px] px-2 py-0.5 rounded-full">TikTok</span>
+                    ) : (
+                      <span className="bg-[#E1306C] text-white font-body font-extrabold text-[10px] px-2 py-0.5 rounded-full">IG</span>
+                    )}
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 p-3">
+                    <p className="font-body font-extrabold text-white text-xs mb-0.5">@{post.creator}</p>
+                    {post.caption && (
+                      <p className="font-body text-white/70 text-[10px] leading-snug line-clamp-2">{post.caption}</p>
+                    )}
+                    {post.likes > 0 && (
+                      <p className="font-body font-bold text-vibe-yellow text-[10px] mt-1">❤️ {post.likes.toLocaleString()}</p>
+                    )}
+                  </div>
+                </a>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
