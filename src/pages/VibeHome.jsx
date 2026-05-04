@@ -12,12 +12,6 @@ const TAGLINES = [
   "The weekend is calling. Who's answering?",
 ]
 
-const QUICK_FILTERS = [
-  { id: 'beach',    emoji: '🏄', label: 'Beach Fronts',    color: 'bg-vibe-blue text-white' },
-  { id: 'mountain', emoji: '⛰️',  label: 'Aburi Mountains', color: 'bg-vibe-yellow text-vibe-navy' },
-  { id: 'lakeside', emoji: '🚣', label: 'Volta Lake',      color: 'bg-sky-500 text-white' },
-  { id: 'nature',   emoji: '🌿', label: 'Nature & Hiking', color: 'bg-white text-vibe-navy' },
-]
 
 export default function VibeHome() {
   const [taglineIdx, setTaglineIdx] = useState(0)
@@ -80,22 +74,8 @@ export default function VibeHome() {
             YOUR NEXT<br />GETAWAY
           </h1>
           <div className="inline-flex items-center bg-vibe-yellow text-vibe-navy font-body font-extrabold text-base px-6 py-3 rounded-full border-2 border-vibe-navy shadow-btn mb-10">
-            Hotels • Eco Lodges • Beach Houses
+            Hotels • Eco Lodges • Beach Houses • Airbnb
           </div>
-        </div>
-
-        {/* Quick pills */}
-        <div className="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto relative z-10">
-          {QUICK_FILTERS.map(f => {
-            const active = selectedActivities.includes(f.id)
-            return (
-              <button key={f.id} onClick={() => toggleActivity(f.id)}
-                className={`activity-pill font-body font-extrabold text-sm px-5 py-2.5 rounded-full border-2 border-vibe-navy transition-all ${active ? 'bg-vibe-navy text-white' : f.color}`}
-              >
-                {f.emoji} {f.label}
-              </button>
-            )
-          })}
         </div>
       </section>
 
