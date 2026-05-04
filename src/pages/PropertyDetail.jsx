@@ -6,13 +6,60 @@ import PropertyCard from '../components/PropertyCard'
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
+function ContactModal({ p, onClose }) {
+  const whatsappMsg = encodeURIComponent(`Hi, I'm interested in ${p.name} (GHS ${p.priceGHS.toLocaleString()}/night). Could you share more details? Found on Getaway.gh`)
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4" onClick={onClose}>
+      <div className="absolute inset-0 bg-vibe-navy/70 backdrop-blur-sm" />
+      <div className="relative bg-white rounded-2xl border-2 border-vibe-navy shadow-card w-full max-w-sm p-6" onClick={e => e.stopPropagation()}>
+        <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 hover:bg-vibe-red hover:text-white flex items-center justify-center font-bold text-gray-500 transition-colors">✕</button>
+
+        <p className="font-cursive text-vibe-blue text-lg mb-1">get in touch</p>
+        <h2 className="font-display text-2xl text-vibe-navy uppercase leading-tight mb-1">{p.name}</h2>
+        <p className="font-body text-xs text-gray-400 mb-5">📍 {p.district}, {p.region} · GHS {p.priceGHS.toLocaleString()}/night</p>
+
+        <div className="space-y-3">
+          {/* WhatsApp */}
+          <a href={`https://wa.me/?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer"
+            className="flex items-center gap-3 w-full py-3 px-4 rounded-xl border-2 border-vibe-navy bg-green-500 text-white font-body font-bold text-sm hover:bg-green-600 transition-colors">
+            <svg className="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+              <path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.553 4.122 1.523 5.859L0 24l6.335-1.509A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.006-1.374l-.359-.213-3.721.887.929-3.613-.234-.372A9.818 9.818 0 0112 2.182c5.422 0 9.818 4.396 9.818 9.818S17.422 21.818 12 21.818z"/>
+            </svg>
+            Contact via WhatsApp
+          </a>
+
+          {/* Airbnb link */}
+          {p.airbnbUrl && (
+            <a href={p.airbnbUrl} target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-3 w-full py-3 px-4 rounded-xl border-2 border-vibe-navy bg-vibe-red text-white font-body font-bold text-sm hover:opacity-90 transition-opacity">
+              <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm.36 18.48c-.48.6-1.26.6-1.74 0-1.98-2.52-5.88-7.08-5.88-9.96C4.74 5.76 8.1 3.6 12 3.6s7.26 2.16 7.26 4.92c0 2.88-3.9 7.44-5.88 9.96h-.02zm0-7.32c1.08 0 1.92-.84 1.92-1.92S13.44 7.32 12 7.32s-1.92.84-1.92 1.92.84 1.92 1.92 1.92z"/>
+              </svg>
+              View on Airbnb
+            </a>
+          )}
+
+          {/* Share */}
+          <a href={`https://wa.me/?text=${encodeURIComponent(`Check out ${p.name} on Getaway.gh — GHS ${p.priceGHS.toLocaleString()}/night! https://getaway-gh.vercel.app/property/${p.id}`)}`}
+            target="_blank" rel="noopener noreferrer"
+            className="flex items-center gap-3 w-full py-3 px-4 rounded-xl border-2 border-vibe-navy bg-vibe-yellow text-vibe-navy font-body font-bold text-sm hover:opacity-90 transition-opacity">
+            <span className="text-lg">📤</span>
+            Share with friends
+          </a>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function PropertyDetail() {
   const { id } = useParams()
   const { isSaved, toggle } = useTripBoard()
   const p = properties.find(prop => prop.id === Number(id))
-  const [imgIdx,      setImgIdx]      = useState(0)
-  const [showAll,     setShowAll]     = useState(false)
-  const [groupCount,  setGroupCount]  = useState(1)
+  const [imgIdx,       setImgIdx]       = useState(0)
+  const [showAll,      setShowAll]      = useState(false)
+  const [showContact,  setShowContact]  = useState(false)
 
   if (!p) {
     return (
@@ -27,10 +74,11 @@ export default function PropertyDetail() {
 
   const saved = isSaved(p.id)
   const related = properties.filter(r => r.id !== p.id && r.activities.some(a => p.activities.includes(a))).slice(0, 3)
-  const whatsappMsg = encodeURIComponent(`Check out ${p.name} on Getaway.gh — GHS ${p.priceGHS}/night! https://getaway-gh.vercel.app/property/${p.id}`)
 
   return (
     <div className="min-h-screen bg-vibe-red page-enter">
+
+      {showContact && <ContactModal p={p} onClose={() => setShowContact(false)} />}
 
       {/* ── BREADCRUMB ───────────────────────────────────── */}
       <div className="pt-24 pb-2 px-4 max-w-5xl mx-auto">
@@ -64,11 +112,6 @@ export default function PropertyDetail() {
               </div>
             </>
           )}
-
-          {/* Flash deal badge */}
-          {p.isFlashDeal && (
-            <div className="absolute top-3 left-3 bg-vibe-red text-white font-display text-sm px-3 py-1 rounded-full border-2 border-vibe-navy">⚡ FLASH DEAL</div>
-          )}
         </div>
       </div>
 
@@ -89,7 +132,6 @@ export default function PropertyDetail() {
               {p.verified && (
                 <span className="bg-white text-vibe-navy font-body text-xs font-bold px-2.5 py-1 rounded-full border border-vibe-navy">✓ Verified by Getaway.gh</span>
               )}
-              <span className="font-display text-sm bg-vibe-navy text-white px-3 py-1 rounded-full">🔥 {p.vibeScore} vibe score</span>
             </div>
 
             {/* Tags */}
@@ -99,66 +141,17 @@ export default function PropertyDetail() {
               ))}
             </div>
 
-            {/* Best bits bar */}
-            {p.bestBits && (
-              <div className="bg-white rounded-xl border-2 border-vibe-navy shadow-card p-4 mb-6">
-                <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-3">The best bits</p>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  {p.bestBits.map((bit, i) => (
-                    <div key={i} className="flex items-center gap-2 flex-1 bg-gray-50 rounded-lg px-3 py-2">
-                      <span className="text-2xl">{bit.icon}</span>
-                      <span className="font-body text-sm font-bold text-vibe-navy">{bit.text}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
             {/* Description */}
             <div className="bg-white rounded-xl border-2 border-vibe-navy shadow-card p-5 mb-6">
               <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-2">The Vibe</p>
               <p className="font-body text-vibe-navy leading-relaxed">{p.description}</p>
             </div>
 
-            {/* What's included / not included */}
-            {p.included && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                <div className="bg-white rounded-xl border-2 border-vibe-navy shadow-card p-4">
-                  <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-3">✅ What's included</p>
-                  <ul className="space-y-1.5">
-                    {p.included.map((item, i) => (
-                      <li key={i} className="font-body text-sm text-vibe-navy flex items-start gap-2">
-                        <span className="text-green-600 mt-0.5 shrink-0">✓</span> {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="bg-white rounded-xl border-2 border-vibe-navy shadow-card p-4">
-                  <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-3">❌ Not included</p>
-                  <ul className="space-y-1.5">
-                    {p.notIncluded.map((item, i) => (
-                      <li key={i} className="font-body text-sm text-gray-500 flex items-start gap-2">
-                        <span className="text-vibe-red mt-0.5 shrink-0">✕</span> {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            )}
-
             {/* Transport */}
             {p.transport && (
               <div className="bg-white rounded-xl border-2 border-vibe-navy shadow-card p-4 mb-6">
                 <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-2">🚗 Getting there</p>
                 <p className="font-body text-sm text-vibe-navy">{p.transport}</p>
-              </div>
-            )}
-
-            {/* Accessibility */}
-            {p.accessibility && (
-              <div className="bg-vibe-yellow rounded-xl border-2 border-vibe-navy shadow-card p-4 mb-6">
-                <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-1">♿ Accessibility</p>
-                <p className="font-body text-sm text-vibe-navy font-bold">{p.accessibility}</p>
               </div>
             )}
 
@@ -282,11 +275,11 @@ export default function PropertyDetail() {
             </div>
           </div>
 
-          {/* RIGHT COLUMN — sticky booking panel */}
+          {/* RIGHT COLUMN — sticky panel */}
           <div className="lg:w-80 shrink-0">
             <div className="sticky top-24 space-y-4">
               <div className="bg-white rounded-xl border-2 border-vibe-navy shadow-card p-5">
-                <div className="mb-4">
+                <div className="mb-5">
                   <span className="font-body text-xs text-gray-500">from</span>
                   <div className="flex items-baseline gap-2">
                     <span className="font-display text-3xl text-vibe-navy">GHS {p.priceGHS.toLocaleString()}</span>
@@ -296,49 +289,17 @@ export default function PropertyDetail() {
                   {p.minStay > 1 && (
                     <p className="font-body text-xs text-vibe-red font-bold mt-1">Minimum {p.minStay} nights</p>
                   )}
-                  {p.bookingsThisMonth > 8 && (
-                    <p className="font-body text-xs text-vibe-red font-bold mt-1">🔥 {p.bookingsThisMonth} people booked this month</p>
-                  )}
                 </div>
 
-                {/* Group size stepper */}
-                <div className="border border-gray-200 rounded-xl px-3 py-2.5 mb-4">
-                  <div className="flex items-center justify-between">
-                    <span className="font-body text-xs text-gray-500 font-bold uppercase tracking-wide">Group size</span>
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => setGroupCount(c => Math.max(1, c - 1))}
-                        className="w-7 h-7 rounded-lg bg-vibe-navy text-white font-display text-sm flex items-center justify-center hover:bg-vibe-blue transition-colors">−</button>
-                      <span className="font-display text-lg text-vibe-navy w-5 text-center">{groupCount}</span>
-                      <button onClick={() => setGroupCount(c => Math.min(12, c + 1))}
-                        className="w-7 h-7 rounded-lg bg-vibe-navy text-white font-display text-sm flex items-center justify-center hover:bg-vibe-blue transition-colors">+</button>
-                    </div>
-                  </div>
-                  {groupCount > 1 && (
-                    <p className="font-body text-xs text-vibe-blue font-bold mt-1.5">
-                      → GHS {Math.round(p.priceGHS / groupCount).toLocaleString()} / person / night
-                    </p>
-                  )}
-                </div>
-
-                <a href={`https://wa.me/?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer"
+                <button onClick={() => setShowContact(true)}
                   className="vibe-btn w-full block text-center bg-vibe-blue text-white font-display text-base py-3 rounded-full border-2 border-vibe-navy mb-3">
-                  BOOK THIS SPOT
-                </a>
-
-                <button onClick={() => toggle(p.id)}
-                  className={`vibe-btn w-full font-display text-base py-3 rounded-full border-2 border-vibe-navy transition-colors mb-3 ${saved ? 'bg-vibe-red text-white' : 'bg-vibe-yellow text-vibe-navy'}`}>
-                  {saved ? '❤️ SAVED TO BOARD' : '🤍 SAVE TO BOARD'}
+                  CONTACT SPOT
                 </button>
 
-                {/* WhatsApp share */}
-                <a href={`https://wa.me/?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-full border-2 border-vibe-navy bg-green-500 text-white font-body font-bold text-sm hover:bg-green-600 transition-colors">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-                    <path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.553 4.122 1.523 5.859L0 24l6.335-1.509A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.006-1.374l-.359-.213-3.721.887.929-3.613-.234-.372A9.818 9.818 0 0112 2.182c5.422 0 9.818 4.396 9.818 9.818S17.422 21.818 12 21.818z"/>
-                  </svg>
-                  Share on WhatsApp
-                </a>
+                <button onClick={() => toggle(p.id)}
+                  className={`vibe-btn w-full font-display text-base py-3 rounded-full border-2 border-vibe-navy transition-colors ${saved ? 'bg-vibe-red text-white' : 'bg-vibe-yellow text-vibe-navy'}`}>
+                  {saved ? '❤️ SAVED TO BOARD' : '🤍 SAVE TO BOARD'}
+                </button>
               </div>
 
               {/* Good for */}

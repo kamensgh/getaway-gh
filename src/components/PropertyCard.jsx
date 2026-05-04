@@ -10,13 +10,6 @@ export default function PropertyCard({ property: p, style }) {
     <div className="property-card relative bg-white rounded-xl2 border-2 border-vibe-navy shadow-card overflow-visible cursor-pointer group"
       style={{ transform: `rotate(${p.rotate})`, ...style }}>
 
-      {/* Flash deal ribbon */}
-      {p.isFlashDeal && (
-        <div className="absolute -top-3 left-4 z-10 bg-vibe-red text-white font-display text-xs px-3 py-1 rounded-full border-2 border-vibe-navy">
-          ⚡ FLASH DEAL
-        </div>
-      )}
-
       {/* Image */}
       <Link to={`/property/${p.id}`}>
         <div className="relative h-52 overflow-hidden border-b-2 border-vibe-navy rounded-t-xl2">
@@ -46,9 +39,8 @@ export default function PropertyCard({ property: p, style }) {
       {/* Card body */}
       <Link to={`/property/${p.id}`}>
         <div className="p-4">
-          <div className="flex items-start justify-between mb-1 gap-2">
+          <div className="mb-1">
             <p className="font-body text-xs text-gray-500 font-semibold leading-tight">{p.badge}</p>
-            <span className="font-display text-sm bg-vibe-navy text-white px-2 py-0.5 rounded-full shrink-0">🔥 {p.vibeScore}</span>
           </div>
 
           <h3 className="font-display text-base text-vibe-navy uppercase leading-tight mb-1">{p.name}</h3>
@@ -64,17 +56,6 @@ export default function PropertyCard({ property: p, style }) {
             <p className="font-body text-xs text-gray-400 mb-2">🚗 {p.transport.split('·')[0].trim()}</p>
           )}
 
-          {/* Best bits strip */}
-          {p.bestBits && (
-            <div className="flex flex-col gap-0.5 mb-3 py-2 px-2 bg-gray-50 rounded-lg border border-gray-100">
-              {p.bestBits.map((bit, i) => (
-                <span key={i} className="font-body text-xs text-vibe-navy flex items-center gap-1.5">
-                  <span>{bit.icon}</span> {bit.text}
-                </span>
-              ))}
-            </div>
-          )}
-
           <div className="flex flex-wrap gap-1.5 mb-3">
             {p.tags.slice(0, 2).map(tag => (
               <span key={tag} className={`${getTagClass(tag)} font-body text-xs font-bold px-2 py-0.5 rounded-full`}>{tag}</span>
@@ -84,11 +65,8 @@ export default function PropertyCard({ property: p, style }) {
             )}
           </div>
 
-          <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+          <div className="pt-2 border-t border-gray-100">
             <span className="font-body text-xs text-gray-400">{p.type}</span>
-            {p.bookingsThisMonth > 0 && (
-              <span className="font-body text-xs text-vibe-red font-bold">🔥 {p.bookingsThisMonth} booked this month</span>
-            )}
           </div>
         </div>
       </Link>

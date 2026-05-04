@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import PropertyCard from '../components/PropertyCard'
 import ActivityFilter from '../components/ActivityFilter'
-import { properties, REGIONS, TYPES, GROUP_SIZES, DURATIONS, EDITORIAL_PICKS } from '../data/properties'
+import { properties, REGIONS, TYPES, EDITORIAL_PICKS } from '../data/properties'
 
 const TAGLINES = [
   'Where in Ghana are you escaping to?',
@@ -18,11 +18,9 @@ export default function VibeHome() {
   const [taglineKey, setTaglineKey] = useState(0)
   const [selectedActivities, setSelectedActivities] = useState([])
   const [priceMax, setPriceMax] = useState(2000)
-  const [groupSize, setGroupSize] = useState('')
   const [region, setRegion] = useState('')
   const [type, setType] = useState('')
   const [showFilters, setShowFilters] = useState(false)
-  const [duration, setDuration] = useState('')
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -42,14 +40,10 @@ export default function VibeHome() {
   const filtered = useMemo(() => properties.filter(p => {
     if (selectedActivities.length > 0 && !selectedActivities.some(a => p.activities.includes(a))) return false
     if (p.priceGHS > priceMax) return false
-    if (groupSize && !p.groups.includes(groupSize)) return false
     if (region && p.region !== region) return false
     if (type && p.type !== type) return false
-    if (duration === '1' && p.minStay > 1) return false
-    if (duration === '2' && (p.minStay > 2 || p.minStay < 2)) return false
-    if (duration === '3' && p.minStay < 3) return false
     return true
-  }), [selectedActivities, priceMax, groupSize, region, type, duration])
+  }), [selectedActivities, priceMax, region, type])
 
   return (
     <div className="min-h-screen bg-vibe-red">
@@ -103,33 +97,14 @@ export default function VibeHome() {
             </button>
           </div>
 
-          {/* Duration pills */}
-          <div className="flex flex-wrap gap-2 mb-4">
-            <span className="font-body font-extrabold text-white/70 text-xs self-center mr-1 uppercase tracking-wide">Stay:</span>
-            {DURATIONS.map(d => (
-              <button key={d.id} onClick={() => setDuration(d.id === duration ? '' : d.id)}
-                className={`font-body font-extrabold text-xs px-4 py-1.5 rounded-full border-2 border-vibe-navy transition-all ${duration === d.id ? 'bg-vibe-navy text-white' : 'bg-white text-vibe-navy hover:bg-vibe-yellow'}`}>
-                {d.label}
-              </button>
-            ))}
-          </div>
-
           {showFilters && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 p-5 bg-white rounded-2xl border-2 border-vibe-navy shadow-card">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 p-5 bg-white rounded-2xl border-2 border-vibe-navy shadow-card">
               <div>
                 <label className="font-body font-extrabold text-xs text-vibe-navy uppercase tracking-wider block mb-2">
                   Max Price: GHS {priceMax.toLocaleString()}
                 </label>
                 <input type="range" min={180} max={2000} step={50} value={priceMax}
                   onChange={e => setPriceMax(+e.target.value)} className="w-full accent-vibe-blue" />
-              </div>
-              <div>
-                <label className="font-body font-extrabold text-xs text-vibe-navy uppercase tracking-wider block mb-2">Group Size</label>
-                <select value={groupSize} onChange={e => setGroupSize(e.target.value)}
-                  className="w-full border-2 border-vibe-navy rounded-xl px-3 py-2 font-body text-sm focus:outline-none focus:ring-2 focus:ring-vibe-blue">
-                  <option value="">Any size</option>
-                  {GROUP_SIZES.map(g => <option key={g.id} value={g.id}>{g.label}</option>)}
-                </select>
               </div>
               <div>
                 <label className="font-body font-extrabold text-xs text-vibe-navy uppercase tracking-wider block mb-2">Region</label>
@@ -160,7 +135,7 @@ export default function VibeHome() {
               <p className="font-display text-4xl text-white uppercase mb-4">No spots found 😅</p>
               <p className="font-body text-white/70 mb-6">Try removing some filters or pick a different activity.</p>
               <button
-                onClick={() => { setSelectedActivities([]); setGroupSize(''); setRegion(''); setType(''); setPriceMax(2000); setDuration('') }}
+                onClick={() => { setSelectedActivities([]); setRegion(''); setType(''); setPriceMax(2000) }}
                 className="vibe-btn bg-vibe-yellow text-vibe-navy font-display px-6 py-3 rounded-full border-2 border-vibe-navy">
                 RESET ALL FILTERS
               </button>
