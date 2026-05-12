@@ -18,7 +18,7 @@ function Pill({ a, active, onToggle, btnRef }) {
   )
 }
 
-export default function ActivityFilter({ selected, onToggle }) {
+export default function ActivityFilter({ selected, onToggle, onClearAll }) {
   const mobileRefs = useRef({})
 
   // Scroll newly-selected chip into view on mobile
@@ -29,9 +29,9 @@ export default function ActivityFilter({ selected, onToggle }) {
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
   }, [selected])
 
-  const clearBtn = selected.length > 0 && (
+  const clearBtn = (
     <button
-      onClick={() => selected.forEach(id => onToggle(id))}
+      onClick={onClearAll}
       className="activity-pill font-body font-extrabold text-sm px-5 py-2.5 rounded-full border-2 border-vibe-navy bg-vibe-red text-white whitespace-nowrap hover:bg-red-700 transition-all"
     >
       ✕ Clear all

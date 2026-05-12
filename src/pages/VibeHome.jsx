@@ -132,6 +132,14 @@ export default function VibeHome() {
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
   }, [fromCity])
 
+  const clearAllActivities = useCallback(() => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev)
+      next.delete('activities')
+      return next
+    }, { replace: true })
+  }, [setSearchParams])
+
   const toggleActivity = useCallback((id) => {
     // Desktop only: scroll so the activity section sits just under the navbar
     if (window.innerWidth >= 1024 && activitySectionRef.current) {
@@ -210,7 +218,7 @@ export default function VibeHome() {
       <section ref={activitySectionRef} className="px-4 py-8 bg-vibe-navy">
         <div className="max-w-5xl mx-auto">
           <p className="font-cursive text-vibe-yellow text-xl text-center mb-5">what's your getaway style?</p>
-          <ActivityFilter selected={selectedActivities} onToggle={toggleActivity} />
+          <ActivityFilter selected={selectedActivities} onToggle={toggleActivity} onClearAll={clearAllActivities} />
         </div>
       </section>
 
