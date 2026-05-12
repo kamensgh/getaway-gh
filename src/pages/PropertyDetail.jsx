@@ -282,21 +282,7 @@ export default function PropertyDetail() {
             {/* Transport */}
             {p.transport && (
               <div className="bg-white rounded-xl border-2 border-vibe-navy shadow-card p-4 mb-6">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="font-display text-xs text-vibe-navy uppercase tracking-wider">🚗 Getting there</p>
-                  <div className="flex items-center gap-2">
-                    <span className="font-body text-xs text-gray-500">from</span>
-                    <select
-                      value={fromCity}
-                      onChange={e => setFromCity(e.target.value)}
-                      className="font-body font-bold text-xs text-vibe-navy border-2 border-vibe-navy rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-vibe-yellow"
-                    >
-                      {DEPARTURE_CITIES.map(c => (
-                        <option key={c.id} value={c.id}>{c.id}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
+                <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-3">🚗 Getting there from</p>
 
                 {/* City pills */}
                 <div className="flex flex-wrap gap-1.5 mb-3">
