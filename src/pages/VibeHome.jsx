@@ -192,7 +192,7 @@ export default function VibeHome() {
           </div>
 
           <div className="inline-flex items-center bg-vibe-yellow text-vibe-navy font-body font-extrabold text-base px-6 py-3 rounded-full border-2 border-vibe-navy shadow-btn mb-6">
-            Hotels • Eco Lodges • Beach Houses • Airbnb
+            Hotels • Lodges • Beach Houses • Airbnb
           </div>
 
         </div>
