@@ -201,7 +201,7 @@ export default function VibeHome() {
   return (
     <div className="min-h-screen bg-vibe-red">
       {/* ── HERO ─────────────────────────────────────────── */}
-      <section className="relative pt-28 pb-10 px-4 overflow-hidden">
+      <section className="relative pt-28 pb-10 px-4">
         <div className="absolute top-28 left-6 text-white text-4xl opacity-80 animate-float select-none pointer-events-none">✦</div>
         <div className="absolute top-44 right-10 text-white text-2xl opacity-50 animate-float select-none pointer-events-none" style={{ animationDelay: '1.2s' }}>✦</div>
 
@@ -213,7 +213,7 @@ export default function VibeHome() {
             YOUR NEXT<br />GETAWAY
           </h1>
           {/* AI Search bar */}
-          <div ref={searchWrapperRef} className="relative max-w-xl mx-auto mb-6">
+          <div ref={searchWrapperRef} className="relative max-w-xl mx-auto mb-6 z-20">
             <div className={`flex items-center bg-white border-2 border-vibe-navy shadow-btn overflow-hidden pr-1.5 pl-5 py-1.5 transition-colors focus-within:border-vibe-yellow ${showSuggestions && suggestions.length > 0 ? 'rounded-t-3xl rounded-b-none border-b-0' : 'rounded-full'}`}>
               <span className="text-xl mr-3 shrink-0">✨</span>
               <div className="relative flex-1 flex items-center h-8">
