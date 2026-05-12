@@ -238,7 +238,7 @@ export default function VibeHome() {
                 onClick={() => { setShowSuggestions(false); handleSearch() }}
                 className="shrink-0 bg-vibe-red text-white font-display text-sm px-5 py-2.5 rounded-full border-2 border-vibe-navy hover:bg-vibe-navy transition-colors ml-2 whitespace-nowrap"
               >
-                ASK AI →
+                ASK AI
               </button>
             </div>
 
