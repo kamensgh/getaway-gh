@@ -97,6 +97,85 @@ function ContactModal({ p, onClose }) {
   )
 }
 
+/* ── Weather chart ─────────────────────────────────────────────────── */
+function WeatherChart({ weather }) {
+  const maxRain = Math.max(...weather.months.map(m => m.rain), 1)
+  return (
+    <div>
+      {weather.note && (
+        <p className="font-body text-sm text-gray-600 italic mb-5 leading-relaxed">{weather.note}</p>
+      )}
+      {/* Chart */}
+      <div className="flex items-end gap-0.5 h-36">
+        {weather.months.map((m, i) => {
+          const rainPct = Math.round((m.rain / maxRain) * 100)
+          return (
+            <div key={m.m} className="flex-1 flex flex-col items-center gap-1 group">
+              {/* Temp label */}
+              <span className="font-body text-[8px] font-bold text-vibe-navy opacity-0 group-hover:opacity-100 transition-opacity">{m.hi}°</span>
+              {/* Rain bar */}
+              <div className="w-full flex flex-col justify-end" style={{ height: '80px' }}>
+                <div
+                  className="w-full rounded-t-sm transition-all duration-300 group-hover:opacity-90"
+                  style={{
+                    height: `${Math.max(rainPct, 3)}%`,
+                    background: rainPct > 60
+                      ? '#1e40af'
+                      : rainPct > 30
+                        ? '#60a5fa'
+                        : '#bfdbfe',
+                  }}
+                />
+              </div>
+              {/* Temp dot row */}
+              <div
+                className="w-2.5 h-2.5 rounded-full border-2 border-vibe-navy"
+                style={{ background: m.hi > 31 ? '#E84422' : m.hi > 28 ? '#FBBF24' : '#60a5fa' }}
+              />
+              <span className="font-body text-[8px] text-gray-400 leading-none">{m.m}</span>
+            </div>
+          )
+        })}
+      </div>
+      {/* Legend */}
+      <div className="flex items-center gap-5 mt-4 pt-3 border-t border-gray-100">
+        <div className="flex items-center gap-1.5">
+          <div className="w-3 h-3 rounded-sm bg-blue-400" />
+          <span className="font-body text-xs text-gray-500">Rainfall (mm)</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div className="w-2.5 h-2.5 rounded-full bg-vibe-red border-2 border-vibe-navy" />
+          <span className="font-body text-xs text-gray-500">Avg high temp · hover for °C</span>
+        </div>
+      </div>
+      {/* Temp range table */}
+      <div className="mt-4 overflow-x-auto">
+        <table className="w-full text-center">
+          <thead>
+            <tr>
+              {weather.months.map(m => (
+                <th key={m.m} className="font-body text-[8px] text-gray-400 pb-1 font-normal">{m.m}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              {weather.months.map(m => (
+                <td key={m.m} className="font-body text-[9px] font-bold text-vibe-navy">{m.hi}°</td>
+              ))}
+            </tr>
+            <tr>
+              {weather.months.map(m => (
+                <td key={m.m} className="font-body text-[9px] text-gray-400">{m.lo}°</td>
+              ))}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
 export default function PropertyDetail() {
   const { id } = useParams()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -105,6 +184,7 @@ export default function PropertyDetail() {
   const [imgIdx,       setImgIdx]       = useState(0)
   const [showContact,  setShowContact]  = useState(false)
   const [galleryOpen,  setGalleryOpen]  = useState(false)
+  const [activeTab,    setActiveTab]    = useState('overview')
 
   const fromCity = searchParams.get('from') || 'Accra'
   const setFromCity = (city) => setSearchParams(prev => {
@@ -148,6 +228,13 @@ export default function PropertyDetail() {
 
   const saved = isSaved(p.id)
   const related = properties.filter(r => r.id !== p.id && r.region === p.region).slice(0, 3)
+
+  const tabs = [
+    { id: 'overview',      label: 'Overview',       emoji: '✦' },
+    ...(p.itinerary?.length || p.activities_nearby?.length ? [{ id: 'detail', label: 'In more detail', emoji: '📋' }] : []),
+    ...(p.weather ? [{ id: 'weather', label: 'Weather', emoji: '🌤' }] : []),
+    ...((p.transport || p.coords || p.safety) ? [{ id: 'getting-there', label: 'Getting there', emoji: '🗺' }] : []),
+  ]
 
   return (
     <div className="min-h-screen bg-vibe-red page-enter">
@@ -259,212 +346,350 @@ export default function PropertyDetail() {
             <p className="font-body text-sm font-bold text-vibe-yellow mb-1">{p.badge}</p>
             <h1 className="font-display text-4xl sm:text-5xl text-white uppercase leading-tight mb-2">{p.name}</h1>
 
-            {/* Location */}
-            <div className="flex flex-wrap items-center gap-3 mb-4">
+            {/* Location + tags */}
+            <div className="flex flex-wrap items-center gap-3 mb-3">
               <p className="font-body font-bold text-white/80 text-sm uppercase tracking-wide">📍 {p.district}, {p.region}</p>
             </div>
-
-            {/* Tags */}
             {p.tags?.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-6">
+              <div className="flex flex-wrap gap-2 mb-5">
                 {p.tags.map(tag => (
                   <span key={tag} className={`${getTagClass(tag)} font-body text-sm font-bold px-3 py-1 rounded-full`}>{tag}</span>
                 ))}
               </div>
             )}
 
-            {/* Description */}
-            <div className="bg-white rounded-xl border-2 border-vibe-navy shadow-card p-5 mb-6">
-              <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-2">The Vibe</p>
-              <p className="font-body text-vibe-navy leading-relaxed">{p.description}</p>
+            {/* ── TAB BAR ──────────────────────────────────────── */}
+            <div className="flex gap-1.5 overflow-x-auto pb-1 mb-6 -mx-1 px-1 scrollbar-hide">
+              {tabs.map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full border-2 border-vibe-navy font-display text-xs uppercase tracking-wide transition-colors whitespace-nowrap
+                    ${activeTab === tab.id
+                      ? 'bg-vibe-navy text-white'
+                      : 'bg-white text-vibe-navy hover:bg-vibe-yellow'}`}
+                >
+                  <span>{tab.emoji}</span> {tab.label}
+                </button>
+              ))}
             </div>
 
-            {/* Transport */}
-            {p.transport && (
-              <div className="bg-white rounded-xl border-2 border-vibe-navy shadow-card p-4 mb-6">
-                <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-3">🚗 Getting there from</p>
+            {/* ── OVERVIEW TAB ─────────────────────────────────── */}
+            {activeTab === 'overview' && (
+              <div className="space-y-6">
 
-                {/* City pills */}
-                <div className="flex flex-wrap gap-1.5 mb-3">
-                  {DEPARTURE_CITIES.map(c => (
-                    <button key={c.id} onClick={() => setFromCity(c.id)}
-                      className={`font-body font-extrabold text-[11px] px-2.5 py-1 rounded-full border-2 transition-colors ${fromCity === c.id ? 'bg-vibe-navy text-white border-vibe-navy' : 'text-vibe-navy border-vibe-navy/30 hover:border-vibe-navy'}`}>
-                      {c.id}
-                    </button>
-                  ))}
+                {/* Best bits strip */}
+                {p.bestBits?.length > 0 && (
+                  <div className="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
+                    {p.bestBits.map((bit, i) => (
+                      <div key={i} className="shrink-0 flex items-start gap-2.5 bg-vibe-yellow border-2 border-vibe-navy rounded-xl px-4 py-3 min-w-[140px] max-w-[180px]">
+                        <span className="text-xl mt-0.5 shrink-0">{bit.icon}</span>
+                        <p className="font-body text-xs font-bold text-vibe-navy leading-snug">{bit.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Description */}
+                <div className="bg-white rounded-xl border-2 border-vibe-navy shadow-card p-5">
+                  <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-2">The Vibe</p>
+                  <p className="font-body text-vibe-navy leading-relaxed">{p.description}</p>
                 </div>
 
-                {driveTime && (
-                  <p className="font-display text-lg text-vibe-navy mb-2">{driveTime} from {fromCity}</p>
+                {/* What's included / not included */}
+                {(p.included?.length > 0 || p.notIncluded?.length > 0) && (
+                  <div className="bg-white rounded-xl border-2 border-vibe-navy shadow-card p-5">
+                    <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-4">What's included</p>
+                    <div className="grid sm:grid-cols-2 gap-x-6 gap-y-1">
+                      {/* Included */}
+                      <div>
+                        {p.included?.map((item, i) => (
+                          <div key={i} className="flex items-start gap-2 py-1.5 border-b border-gray-50 last:border-0">
+                            <span className="text-emerald-500 font-bold text-base shrink-0 leading-none mt-0.5">✓</span>
+                            <span className="font-body text-sm text-vibe-navy">{item}</span>
+                          </div>
+                        ))}
+                      </div>
+                      {/* Not included */}
+                      {p.notIncluded?.length > 0 && (
+                        <div>
+                          <p className="font-display text-[10px] text-gray-400 uppercase tracking-wider mb-1.5">Not included</p>
+                          {p.notIncluded.map((item, i) => (
+                            <div key={i} className="flex items-start gap-2 py-1.5 border-b border-gray-50 last:border-0">
+                              <span className="text-gray-300 font-bold text-base shrink-0 leading-none mt-0.5">✗</span>
+                              <span className="font-body text-sm text-gray-500">{item}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 )}
-                <p className="font-body text-sm text-gray-500">{p.transport}</p>
+
+                {/* Amenities */}
+                {p.amenities?.length > 0 && (
+                  <div className="bg-white rounded-xl border-2 border-vibe-navy shadow-card p-5">
+                    <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-3">What's on site</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {p.amenities.map(a => (
+                        <div key={a} className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
+                          <span className="text-lg">{a.split(' ')[0]}</span>
+                          <span className="font-body text-xs text-vibe-navy font-bold">{a.split(' ').slice(1).join(' ')}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Accessibility */}
+                {p.accessibility && (
+                  <div className="bg-white rounded-xl border-2 border-vibe-navy shadow-card p-4">
+                    <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-2">♿ Accessibility</p>
+                    <p className="font-body text-sm text-gray-600">{p.accessibility}</p>
+                  </div>
+                )}
+
+                {/* Best months */}
+                {p.bestMonths && (
+                  <div className="bg-white rounded-xl border-2 border-vibe-navy shadow-card p-4">
+                    <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-3">📅 Best time to visit</p>
+                    <div className="flex gap-0 rounded-lg overflow-hidden border border-gray-200">
+                      {MONTHS.map((m, i) => {
+                        const active = p.bestMonths.includes(m)
+                        return (
+                          <div key={m} className={`flex-1 flex flex-col items-center py-2.5 gap-1 ${active ? 'bg-vibe-yellow/30' : ''}`}
+                            style={{ borderLeft: i > 0 ? '1px solid #e5e7eb' : 'none' }}>
+                            <span className={`w-2 h-2 rounded-full ${active ? 'bg-vibe-navy' : 'bg-gray-200'}`} />
+                            <span className={`font-body text-[9px] font-bold ${active ? 'text-vibe-navy' : 'text-gray-300'}`}>{m}</span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                    {p.bestMonths && (
+                      <p className="font-body text-xs text-gray-500 mt-2">
+                        Best: <span className="font-bold text-vibe-navy">{p.bestMonths.join(', ')}</span>
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* Festivals */}
+                {getFestivals(p.id).length > 0 && (
+                  <div className="bg-vibe-yellow rounded-xl border-2 border-vibe-navy shadow-card p-5">
+                    <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-4">🎉 What's on nearby</p>
+                    <div className="space-y-4">
+                      {getFestivals(p.id).map((f, i) => (
+                        <div key={i} className="flex gap-3">
+                          <span className="text-2xl shrink-0 mt-0.5">{f.emoji}</span>
+                          <div>
+                            <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                              <p className="font-display text-sm text-vibe-navy uppercase leading-tight">{f.name}</p>
+                              <span className="font-body text-[10px] font-extrabold bg-vibe-navy text-white px-2 py-0.5 rounded-full">{f.month}</span>
+                            </div>
+                            <p className="font-body text-xs text-vibe-navy/80 leading-relaxed">{f.description}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
               </div>
             )}
 
-            {/* Safety & packing */}
-            {p.safety && (
-              <div className="bg-vibe-yellow rounded-xl border-2 border-vibe-navy shadow-card p-4 mb-6">
-                <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-3">🧳 Before you go</p>
-                {p.safety.road && (
-                  <p className="font-body text-xs text-vibe-navy mb-2 flex items-start gap-1.5">
-                    <span className="shrink-0">🚗</span> {p.safety.road}
-                  </p>
+            {/* ── IN MORE DETAIL TAB ───────────────────────────── */}
+            {activeTab === 'detail' && (
+              <div className="space-y-6">
+
+                {/* Day-by-day itinerary */}
+                {p.itinerary?.length > 0 && (
+                  <div>
+                    <h2 className="font-display text-lg text-white uppercase mb-4">Day-by-day itinerary</h2>
+                    <div className="space-y-3">
+                      {p.itinerary.map((day, i) => (
+                        <div key={i} className="bg-white rounded-xl border-2 border-vibe-navy shadow-card overflow-hidden">
+                          <div className="flex items-center gap-3 px-4 py-3 bg-vibe-navy">
+                            <span className="font-display text-vibe-yellow text-sm uppercase">Day {day.day}</span>
+                            <span className="text-white/30">·</span>
+                            <span className="font-display text-white text-sm uppercase">{day.title}</span>
+                          </div>
+                          <div className="p-4">
+                            <ul className="space-y-2">
+                              {day.activities.map((act, j) => (
+                                <li key={j} className="flex items-start gap-2.5 font-body text-sm text-vibe-navy">
+                                  <span className="text-vibe-yellow font-bold shrink-0 mt-0.5">✦</span>
+                                  {act}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 )}
-                {p.safety.health && (
-                  <p className="font-body text-xs text-vibe-navy mb-3 flex items-start gap-1.5">
-                    <span className="shrink-0">💊</span> {p.safety.health}
-                  </p>
+
+                {/* Nearby excursions */}
+                {p.activities_nearby?.length > 0 && (
+                  <div>
+                    <h2 className="font-display text-lg text-white uppercase mb-4">Nearby excursions</h2>
+                    <div className="bg-white rounded-xl border-2 border-vibe-navy shadow-card p-5">
+                      <div className="space-y-0">
+                        {p.activities_nearby.map((act, i) => (
+                          <div key={i} className={`flex items-start gap-3 py-3 ${i < p.activities_nearby.length - 1 ? 'border-b border-gray-100' : ''}`}>
+                            <span className="text-vibe-yellow font-bold text-lg shrink-0 leading-none">✦</span>
+                            <p className="font-body text-sm text-vibe-navy leading-snug">{act}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 )}
-                {p.safety.pack && p.safety.pack.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5">
-                    {p.safety.pack.map((item, i) => (
-                      <span key={i} className="font-body text-xs font-bold bg-white text-vibe-navy px-2.5 py-1 rounded-full border border-vibe-navy">
-                        {item}
-                      </span>
-                    ))}
+
+                {/* Nearby amenities */}
+                <NearbyAmenities coords={p.coords} propertyId={p.id} />
+
+                {/* Reviews — all sources */}
+                {p.reviews?.length > 0 && (
+                  <div>
+                    <h2 className="font-display text-lg text-white uppercase mb-4">What guests say</h2>
+                    <div className="space-y-3">
+                      {p.reviews.map((r, i) => (
+                        <div key={i} className="bg-white rounded-xl border-2 border-vibe-navy shadow-card p-4">
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className="w-9 h-9 bg-vibe-navy text-white rounded-full flex items-center justify-center font-display text-sm shrink-0">{r.avatar}</div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <p className="font-body font-bold text-vibe-navy text-sm">{r.user}</p>
+                                {r.source && (
+                                  <span className={`font-body text-[9px] font-bold px-1.5 py-0.5 rounded-full ${r.source === 'airbnb' ? 'bg-[#FF5A5F]/10 text-[#FF5A5F]' : r.source === 'google' ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-500'}`}>
+                                    {r.source}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="flex gap-0.5">{Array.from({ length: r.rating }).map((_, j) => <span key={j} className="text-vibe-yellow text-sm">★</span>)}{Array.from({ length: 5 - r.rating }).map((_, j) => <span key={j} className="text-gray-200 text-sm">★</span>)}</div>
+                            </div>
+                          </div>
+                          <p className="font-body text-sm text-gray-700 italic">"{r.text}"</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+              </div>
+            )}
+
+            {/* ── WEATHER TAB ──────────────────────────────────── */}
+            {activeTab === 'weather' && p.weather && (
+              <div className="space-y-6">
+                <div className="bg-white rounded-xl border-2 border-vibe-navy shadow-card p-5">
+                  <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-4">🌤 Monthly climate</p>
+                  <WeatherChart weather={p.weather} />
+                </div>
+
+                {p.bestMonths && (
+                  <div className="bg-vibe-yellow rounded-xl border-2 border-vibe-navy shadow-card p-5">
+                    <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-3">📅 Best months to visit</p>
+                    <div className="flex gap-0 rounded-lg overflow-hidden border-2 border-vibe-navy">
+                      {MONTHS.map((m, i) => {
+                        const active = p.bestMonths.includes(m)
+                        return (
+                          <div key={m} className={`flex-1 flex flex-col items-center py-3 gap-1 transition-colors ${active ? 'bg-vibe-navy' : 'bg-white'}`}
+                            style={{ borderLeft: i > 0 ? '1px solid #0E1C40' : 'none' }}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${active ? 'bg-vibe-yellow' : 'bg-gray-200'}`} />
+                            <span className={`font-display text-[9px] uppercase ${active ? 'text-white font-bold' : 'text-gray-300'}`}>{m}</span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                    <p className="font-body text-xs text-vibe-navy mt-3">
+                      <span className="font-bold">Recommended months:</span> {p.bestMonths.join(' · ')}
+                    </p>
                   </div>
                 )}
               </div>
             )}
 
-            {/* Google Maps */}
-            {p.coords && (
-              <div className="bg-white rounded-xl border-2 border-vibe-navy shadow-card overflow-hidden mb-6">
-                <div className="p-4 flex items-center justify-between">
-                  <p className="font-display text-xs text-vibe-navy uppercase tracking-wider">📍 Find it on the map</p>
-                  <a
-                    href={`https://www.google.com/maps?q=${p.coords.lat},${p.coords.lng}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-display text-xs font-bold bg-vibe-navy text-white px-3 py-1.5 rounded-full hover:bg-vibe-yellow hover:text-vibe-navy transition-colors"
-                  >
-                    Open in Google Maps ↗
-                  </a>
-                </div>
-                <iframe
-                  title={`Map of ${p.name}`}
-                  src={`https://www.openstreetmap.org/export/embed.html?bbox=${p.coords.lng - 0.015},${p.coords.lat - 0.01},${p.coords.lng + 0.015},${p.coords.lat + 0.01}&layer=mapnik&marker=${p.coords.lat},${p.coords.lng}`}
-                  className="w-full h-44 border-0"
-                  loading="lazy"
-                />
-              </div>
-            )}
+            {/* ── GETTING THERE TAB ────────────────────────────── */}
+            {activeTab === 'getting-there' && (
+              <div className="space-y-6">
 
-            {/* Nearby amenities */}
-            <NearbyAmenities coords={p.coords} propertyId={p.id} />
-
-            {/* Best months */}
-            {p.bestMonths && (
-              <div className="bg-white rounded-xl border-2 border-vibe-navy shadow-card p-4 mb-6">
-                <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-3">📅 Peak season</p>
-                <div className="flex gap-0 rounded-lg overflow-hidden border border-gray-200">
-                  {MONTHS.map((m, i) => {
-                    const active = p.bestMonths.includes(m)
-                    return (
-                      <div key={m} className="flex-1 flex flex-col items-center py-2 gap-1"
-                        style={{ borderLeft: i > 0 ? '1px solid #e5e7eb' : 'none' }}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${active ? 'bg-vibe-navy' : 'bg-gray-200'}`} />
-                        <span className={`font-body text-[9px] font-bold ${active ? 'text-vibe-navy' : 'text-gray-300'}`}>{m}</span>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            )}
-
-
-            {/* Amenities */}
-            {p.amenities?.length > 0 && (
-              <div className="bg-white rounded-xl border-2 border-vibe-navy shadow-card p-5 mb-6">
-                <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-3">What's on site</p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  {p.amenities.map(a => (
-                    <div key={a} className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
-                      <span className="text-lg">{a.split(' ')[0]}</span>
-                      <span className="font-body text-xs text-vibe-navy font-bold">{a.split(' ').slice(1).join(' ')}</span>
+                {/* Transport + drive time */}
+                {p.transport && (
+                  <div className="bg-white rounded-xl border-2 border-vibe-navy shadow-card p-4">
+                    <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-3">🚗 Getting there from</p>
+                    <div className="flex flex-wrap gap-1.5 mb-3">
+                      {DEPARTURE_CITIES.map(c => (
+                        <button key={c.id} onClick={() => setFromCity(c.id)}
+                          className={`font-body font-extrabold text-[11px] px-2.5 py-1 rounded-full border-2 transition-colors ${fromCity === c.id ? 'bg-vibe-navy text-white border-vibe-navy' : 'text-vibe-navy border-vibe-navy/30 hover:border-vibe-navy'}`}>
+                          {c.id}
+                        </button>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
+                    {driveTime && (
+                      <p className="font-display text-xl text-vibe-navy mb-2">{driveTime} from {fromCity}</p>
+                    )}
+                    <p className="font-body text-sm text-gray-500">{p.transport}</p>
+                  </div>
+                )}
 
-            {/* Festivals & events */}
-            {getFestivals(p.id).length > 0 && (
-              <div className="bg-vibe-yellow rounded-xl border-2 border-vibe-navy shadow-card p-5 mb-6">
-                <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-4">🎉 What's on nearby</p>
-                <div className="space-y-4">
-                  {getFestivals(p.id).map((f, i) => (
-                    <div key={i} className="flex gap-3">
-                      <span className="text-2xl shrink-0 mt-0.5">{f.emoji}</span>
+                {/* Map */}
+                {p.coords && (
+                  <div className="bg-white rounded-xl border-2 border-vibe-navy shadow-card overflow-hidden">
+                    <div className="p-4 flex items-center justify-between">
+                      <p className="font-display text-xs text-vibe-navy uppercase tracking-wider">📍 Find it on the map</p>
+                      <a
+                        href={`https://www.google.com/maps?q=${p.coords.lat},${p.coords.lng}`}
+                        target="_blank" rel="noopener noreferrer"
+                        className="font-display text-xs font-bold bg-vibe-navy text-white px-3 py-1.5 rounded-full hover:bg-vibe-yellow hover:text-vibe-navy transition-colors"
+                      >
+                        Open in Google Maps ↗
+                      </a>
+                    </div>
+                    <iframe
+                      title={`Map of ${p.name}`}
+                      src={`https://www.openstreetmap.org/export/embed.html?bbox=${p.coords.lng - 0.015},${p.coords.lat - 0.01},${p.coords.lng + 0.015},${p.coords.lat + 0.01}&layer=mapnik&marker=${p.coords.lat},${p.coords.lng}`}
+                      className="w-full h-52 border-0"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+
+                {/* Safety & packing */}
+                {p.safety && (
+                  <div className="bg-vibe-yellow rounded-xl border-2 border-vibe-navy shadow-card p-4">
+                    <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-3">🧳 Before you go</p>
+                    {p.safety.road && (
+                      <div className="flex items-start gap-2.5 mb-2.5 pb-2.5 border-b border-vibe-navy/10">
+                        <span className="shrink-0 text-base">🚗</span>
+                        <p className="font-body text-sm text-vibe-navy">{p.safety.road}</p>
+                      </div>
+                    )}
+                    {p.safety.health && (
+                      <div className="flex items-start gap-2.5 mb-2.5 pb-2.5 border-b border-vibe-navy/10">
+                        <span className="shrink-0 text-base">💊</span>
+                        <p className="font-body text-sm text-vibe-navy">{p.safety.health}</p>
+                      </div>
+                    )}
+                    {p.safety.pack?.length > 0 && (
                       <div>
-                        <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                          <p className="font-display text-sm text-vibe-navy uppercase leading-tight">{f.name}</p>
-                          <span className="font-body text-[10px] font-extrabold bg-vibe-navy text-white px-2 py-0.5 rounded-full">{f.month}</span>
+                        <p className="font-display text-[10px] text-vibe-navy uppercase tracking-wider mb-2">Pack list</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {p.safety.pack.map((item, i) => (
+                            <span key={i} className="font-body text-xs font-bold bg-white text-vibe-navy px-2.5 py-1 rounded-full border border-vibe-navy">
+                              {item}
+                            </span>
+                          ))}
                         </div>
-                        <p className="font-body text-xs text-vibe-navy/80 leading-relaxed">{f.description}</p>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    )}
+                  </div>
+                )}
+
               </div>
             )}
 
-
-            {/* Reviews — only shown when sourced from Google or Airbnb */}
-            {p.reviews?.some(r => r.source === 'google' || r.source === 'airbnb') && (
-              <div className="mb-6">
-                <p className="font-display text-lg text-white uppercase mb-4">What people say</p>
-                {[
-                  {
-                    source: 'google',
-                    badge: (
-                      <span className="flex items-center gap-1 bg-white text-xs font-body font-bold text-gray-600 px-2 py-0.5 rounded-full border border-gray-200">
-                        <svg className="w-3 h-3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
-                          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                        </svg>
-                        Google
-                      </span>
-                    ),
-                  },
-                  {
-                    source: 'airbnb',
-                    badge: (
-                      <span className="flex items-center gap-1 bg-white text-xs font-body font-bold text-[#FF5A5F] px-2 py-0.5 rounded-full border border-gray-200">
-                        <svg className="w-3 h-3" viewBox="0 0 24 24" fill="#FF5A5F" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M12 2C9.5 2 7.5 4.5 7.5 7.5c0 2 .8 3.7 2 4.8C7 13.5 5 15.8 5 18.5c0 2 1.5 3.5 3.5 3.5 1.3 0 2.5-.7 3.5-1.8 1 1.1 2.2 1.8 3.5 1.8 2 0 3.5-1.5 3.5-3.5 0-2.7-2-5-4.5-6.2 1.2-1.1 2-2.8 2-4.8C16.5 4.5 14.5 2 12 2zm0 2c1.4 0 2.5 1.6 2.5 3.5S13.4 11 12 11s-2.5-1.6-2.5-3.5S10.6 4 12 4zm-3.5 9.5c1.5 1 2.5 2.5 2.5 4 0 .8-.4 1.5-1 1.5-.8 0-1.5-.8-2-1.8-.5-1-.7-2.2-.7-3.2.4-.2.8-.4 1.2-.5zm7 0c.4.1.8.3 1.2.5 0 1-.2 2.2-.7 3.2-.5 1-1.2 1.8-2 1.8-.6 0-1-.7-1-1.5 0-1.5 1-3 2.5-4z"/>
-                        </svg>
-                        Airbnb
-                      </span>
-                    ),
-                  },
-                ].map(({ source, badge }) => {
-                  const group = p.reviews.filter(r => r.source === source)
-                  if (group.length === 0) return null
-                  return (
-                    <div key={source} className="mb-4">
-                      <div className="flex items-center gap-2 mb-3">{badge}</div>
-                      <div className="space-y-3">
-                        {group.map((r, i) => (
-                          <div key={i} className="bg-white rounded-xl border-2 border-vibe-navy shadow-card p-4">
-                            <div className="flex items-center gap-3 mb-2">
-                              <div className="w-9 h-9 bg-vibe-navy text-white rounded-full flex items-center justify-center font-display text-sm shrink-0">{r.avatar}</div>
-                              <div>
-                                <p className="font-body font-bold text-vibe-navy text-sm">{r.user}</p>
-                                <div className="flex">{Array.from({ length: r.rating }).map((_, j) => <span key={j} className="text-vibe-yellow text-sm">★</span>)}</div>
-                              </div>
-                            </div>
-                            <p className="font-body text-sm text-gray-700 italic">"{r.text}"</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
           </div>
 
           {/* RIGHT COLUMN — sticky panel */}
