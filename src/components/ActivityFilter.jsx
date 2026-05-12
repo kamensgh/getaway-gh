@@ -18,6 +18,13 @@ function Pill({ a, active, onToggle, btnRef }) {
   )
 }
 
+// Split array into N roughly-equal rows (distributed column-first so scroll order feels natural)
+function splitIntoRows(arr, rows) {
+  const result = Array.from({ length: rows }, () => [])
+  arr.forEach((item, i) => result[i % rows].push(item))
+  return result
+}
+
 export default function ActivityFilter({ selected, onToggle, onClearAll }) {
   const mobileRefs = useRef({})
 
@@ -29,34 +36,35 @@ export default function ActivityFilter({ selected, onToggle, onClearAll }) {
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
   }, [selected])
 
+  const rows = splitIntoRows(ACTIVITIES, 3)
 
   return (
     <>
-      {/* ── Mobile: 3-row horizontal-scroll grid ── */}
-      <div
-        className="lg:hidden relative"
-      >
+      {/* ── Mobile: 3 flex rows, each scrolls horizontally ── */}
+      <div className="lg:hidden relative">
         {/* Right-edge fade to hint at more content */}
-        <div className="absolute right-0 top-0 bottom-2 w-16 bg-gradient-to-l from-vibe-navy to-transparent pointer-events-none z-10" />
+        <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-vibe-navy to-transparent pointer-events-none z-10" />
+
         <div
-          className="overflow-x-auto pb-2"
-          style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          className="overflow-x-auto pb-1"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
         >
-        <style>{`.activity-scroll::-webkit-scrollbar{display:none}`}</style>
-        <div
-          className="activity-scroll grid gap-3 pr-12"
-          style={{ gridTemplateRows: 'repeat(3, auto)', gridAutoFlow: 'column', width: 'max-content' }}
-        >
-          {ACTIVITIES.map(a => (
-            <Pill
-              key={a.id}
-              a={a}
-              active={selected.includes(a.id)}
-              onToggle={onToggle}
-              btnRef={el => { mobileRefs.current[a.id] = el }}
-            />
-          ))}
-        </div>
+          <style>{`.activity-rows::-webkit-scrollbar{display:none}`}</style>
+          <div className="activity-rows flex flex-col gap-3 pr-10" style={{ width: 'max-content' }}>
+            {rows.map((row, ri) => (
+              <div key={ri} className="flex gap-3">
+                {row.map(a => (
+                  <Pill
+                    key={a.id}
+                    a={a}
+                    active={selected.includes(a.id)}
+                    onToggle={onToggle}
+                    btnRef={el => { mobileRefs.current[a.id] = el }}
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -73,7 +81,7 @@ export default function ActivityFilter({ selected, onToggle, onClearAll }) {
         ))}
       </div>
 
-      {/* Clear all — below the grid, only when something is selected */}
+      {/* Clear all — below the rows, only when something is selected */}
       {selected.length > 0 && (
         <div className="flex justify-center mt-4">
           <button
