@@ -133,7 +133,7 @@ const _coreProperties = [
     notIncluded: ['Transport to Hohoe', 'Wli Falls entrance fee (GHS 15)', 'Guide for upper falls (GHS 30)'],
     description: "West Africa's highest waterfall is your backyard. This retreat sits minutes from the trailhead, surrounded by fruit trees and the permanent sound of distant water. Weekends get busy — come midweek for the full peace.",
     amenities: ['🍌 Fruit Garden', '🚿 Cold Showers (trust)', '🍽️ Local Canteen', '🚶 Trail Access', '📱 Basic WiFi'],
-    activities_nearby: ['Wli Upper Falls hike', 'Butterfly sanctuary', 'Rafting on Volta', 'Ketaboo waterfall'],
+    activities_nearby: ["Wli Upper Falls — 3hr hike to West Africa's highest waterfall", 'Agumatsa Butterfly Sanctuary through wildlife reserve', "Mount Afadjato — Ghana's highest peak hike (1hr drive to Liati Wote)", 'Tafi-Atome Monkey Sanctuary — walk among sacred mona monkeys (1.5hrs)'],
     itinerary: [
       { day: 1, title: 'Arrive & Lower Falls', activities: ['Arrive in Hohoe, check in', 'Lower falls swim (30 min walk)', 'Local canteen dinner'] },
       { day: 2, title: 'Upper Falls Epic', activities: ['Early 6am start for upper falls hike', '3-hour trek through forest', 'Butterfly sanctuary on the way back'] },
@@ -232,7 +232,7 @@ const _coreProperties = [
     notIncluded: ['Transport from Kumasi', 'Fishing equipment', 'Village tour guide (GHS 40)'],
     description: "Ghana's only natural lake and it's 8km wide. No motorboats allowed — just paddleboats, silence, and that rare Ashanti calm. The sunsets here break your phone camera.",
     amenities: ['🚣 Paddleboat Rental', '🌅 Lake View Rooms', '🍳 Breakfast Included', '🎣 Fishing Trips', '🌳 Garden Lounge'],
-    activities_nearby: ['Lake paddleboating', 'Village cultural tour', 'Kumasi (45 min drive)', 'Kente weaving village'],
+    activities_nearby: ["Sunrise paddleboat on Ghana's only natural lake", 'Bonwire Kente Weaving Village — watch artisans at work (45 min)', 'Manhyia Palace Museum — Kumasi Ashanti royal history (1hr)', 'Kumasi Kejetia Market — largest open-air market in West Africa (1hr)'],
     itinerary: [
       { day: 1, title: 'Arrive & Unwind', activities: ['Check in, welcome fruit basket', 'Sunset paddleboat on the lake', 'Dinner at the guesthouse'] },
       { day: 2, title: 'Lake & Culture', activities: ['Sunrise lake walk', 'Village cultural tour', 'Kente weaving demo', 'Afternoon hammock session'] },
@@ -283,7 +283,7 @@ const _coreProperties = [
     notIncluded: ['Transport to Kakum', 'National Park entrance fee (GHS 20)', 'Alcoholic drinks'],
     description: "Sleep in the forest canopy 40 metres above the ground. Kakum National Park is Ghana's most visited national park for a reason — and this treehouse puts you inside it, literally. Book months ahead.",
     amenities: ['🌳 Canopy Walk Access', '🦜 Bird Watching', '🔦 Night Forest Walk', '🍽️ Bush Kitchen', '🚿 Outdoor Shower'],
-    activities_nearby: ['7-bridge canopy walk', 'Hans Cottage Botel', 'Cape Coast Castle (30 min)', 'Elmina Castle'],
+    activities_nearby: ['7-bridge Canopy Walkway suspended 30m above the forest floor', 'Cape Coast Castle — Dungeons & Door of No Return (30 min)', 'Elmina Castle — oldest European building in sub-Saharan Africa (45 min)', 'Assin Manso Slave River Site — sacred final bathing place before the castles (1hr)'],
     itinerary: [
       { day: 1, title: 'Into the Canopy', activities: ['Arrive at Kakum, briefing at base camp', 'Afternoon canopy walk (7 bridges!)', 'Bush kitchen dinner, sleep in the trees'] },
       { day: 2, title: 'Dawn & Darkness', activities: ['Pre-dawn bird watching session', 'Breakfast in the canopy', 'Night forest walk — torches on, nerves steady'] },
@@ -332,9 +332,9 @@ const _coreProperties = [
     ],
     included: ['Canoe transfer to village', 'Community meals (2x daily)', 'Traditional hut accommodation'],
     notIncluded: ['Transport to Beyin', 'Photography permit (GHS 10)', 'Tips for community hosts'],
-    description: "Nzulezu is a real-life floating village built on stilts over Lake Tadane. Staying here is unlike anything else in West Africa — you live with the community, eat with them, canoe with them. Pure cultural immersion.",
+    description: "Nzulezu is a real-life floating village built entirely on stilts over Lake Tadane. Glide there by dugout canoe through serene waters and mangroves. Staying here is unlike anything else in West Africa — you live with the community, eat with them, wake up on water. Pure, unfiltered cultural immersion.",
     amenities: ['🚣 Canoe Transport', '🍲 Community Meals', '🏡 Traditional Hut', '🌿 Lake Tours', '📸 Photography Access'],
-    activities_nearby: ['Village life experience', 'Canoe fishing', 'Ankasa Forest Reserve', 'Beyin lagoon'],
+    activities_nearby: ['Guided canoe tour through Lake Tadane mangroves', 'Ankasa Conservation Area — Ghana\'s most pristine rainforest (2hrs)', 'Beyin lagoon fishing village walk', 'Green Turtle Lodge turtle patrol (Oct–Jan, 45 min drive)'],
     itinerary: [
       { day: 1, title: 'Arrive by Canoe', activities: ['Drive to Beyin', '1-hour canoe through mangroves', 'Welcome by village chief, settle into hut'] },
       { day: 2, title: 'Village Life', activities: ['Fish with local fishermen at dawn', 'Watch stilt house construction', 'Sunset on the lake platform'] },
@@ -632,7 +632,7 @@ const _coreProperties = [
     notIncluded: ['Flights to Tamale', 'Additional game drives (GHS 80/person)', 'Meals (restaurant on site)'],
     description: "Ghana has elephants. Mole National Park has over 90 of them, plus warthogs, baboons, and antelopes. The lodge pool looks directly over a watering hole where wildlife comes to drink at sunset. This trip is mandatory.",
     amenities: ['🐘 Game Drives', '👟 Walking Safaris', '🏊 Wildlife-View Pool', '🍽️ Restaurant', '📡 Satellite WiFi'],
-    activities_nearby: ['Mole National Park game drives', 'Larabanga Mosque', 'Damongo market', 'Savanna sunset walks'],
+    activities_nearby: ['Mole National Park — 90+ elephants, antelopes, baboons & buffalo', 'Larabanga Mosque — West Africa\'s oldest mosque (13th century)', 'Wechiau Community Hippo Sanctuary — one of only 2 hippo populations in Ghana (3hrs)', 'Damongo market & savanna sunset walks'],
     itinerary: [
       { day: 1, title: 'Arrive in the North', activities: ['Fly Accra–Tamale (1hr)', 'Drive 2hrs to Mole, check in', 'Sundowner by the watering hole pool'] },
       { day: 2, title: 'Safari Day', activities: ['5am walking safari with ranger', 'Elephant spotting at watering hole', 'Afternoon rest, evening game drive'] },
@@ -683,7 +683,7 @@ const _coreProperties = [
     notIncluded: ['Additional castle tour tickets (GHS 30)', 'Elmina Castle visit', 'Kakum transport'],
     description: "Right in the heart of Cape Coast, overlooking the UNESCO castle and the Atlantic. This isn't just a hotel — it's context. Tour the castles, reflect, then eat fresh seafood by the sea. One of Ghana's most important trips.",
     amenities: ['🏰 Castle Views', '🌊 Ocean Terrace', '🍽️ Seafood Restaurant', '🏛️ History Tours', '🎭 Cultural Events'],
-    activities_nearby: ['Cape Coast Castle tour', 'Elmina Castle (30 min)', 'Kakum National Park (40 min)', 'Penitent Beach'],
+    activities_nearby: ['Cape Coast Castle — step through the Door of No Return (5 min walk)', 'Elmina Castle — UNESCO World Heritage Site (30 min)', 'Kakum Canopy Walkway — 7-bridge forest walk 30m above ground (40 min)', 'Assin Manso Slave River Site — moving historical landmark (45 min)'],
     itinerary: [
       { day: 1, title: 'Arrive on the Coast', activities: ['Drive from Accra, settle in', 'Castle view from the terrace at sunset', 'Fresh seafood dinner by the ocean'] },
       { day: 2, title: 'Castles & History', activities: ['Cape Coast Castle guided tour', 'Elmina Castle (30 min drive)', 'Reflect, debrief, fresh palm wine'] },
@@ -832,7 +832,7 @@ const _coreProperties = [
     notIncluded: ['Transport from Ho', 'Mountain permit (GHS 15)', 'Camping gear (available to hire)'],
     description: "The Volta Region's highlands are Ghana's best-kept secret. This eco camp sits at 400m elevation — cool air, ridge views, and the sound of absolutely nothing. Perfect for a digital detox that you'll actually want to do.",
     amenities: ['⛺ Eco Tents', '🌄 Ridge Views', '🧘 Yoga Deck', '🍃 Herbal Garden', '🔆 Solar Power'],
-    activities_nearby: ["Mount Afadjato (Ghana's highest peak)", 'Tagbo waterfall', 'Agumatsa Wildlife Sanctuary', 'Logba hills hike'],
+    activities_nearby: ["Mount Afadjato — Ghana's highest peak, panoramic Volta highland summit (2hr hike)", 'Tagbo waterfall through forest trail (3hr hike)', 'Agumatsa Wildlife Sanctuary — rare butterflies & bird species', 'Wli Agumatsa Waterfalls — West Africa\'s highest waterfall (45 min drive)'],
     itinerary: [
       { day: 1, title: 'Altitude Arrival', activities: ['Drive to Ho, wind up the mountain', 'Settle in, sunset yoga on the deck', 'Herbal garden dinner, no screens required'] },
       { day: 2, title: 'Afadjato Summit', activities: ['4am start for Ghana\'s highest peak', 'Summit by 8am, sunrise above the clouds', 'Rest afternoon, Tagbo waterfall walk'] },
@@ -1032,7 +1032,7 @@ const _coreProperties = [
     notIncluded: ['Flights to Tamale', 'Mole National Park trip (GHS 150+ transport)', 'Motorbike hire (GHS 80/day)'],
     description: "Tamale is the north's capital and it hits different. Smoked guinea fowl, TZ and groundnut soup, the friendliest people in Ghana, and a nightlife that starts late and ends later. This hostel connects you to real northern culture.",
     amenities: ['🛏️ Private & Dorm Rooms', '🍢 Guinea Fowl Grill', '🏍️ Motorbike Rentals', '🌐 Fast WiFi', '🎵 Rooftop Chill Area'],
-    activities_nearby: ['Tamale central market', 'Mole National Park (2hrs)', 'Larabanga mosque (2hrs)', 'Salaga slave market'],
+    activities_nearby: ['Tamale central market — smoked guinea fowl & northern crafts', "Mole National Park — Ghana's largest wildlife reserve (2hrs)", 'Larabanga Mosque — West Africa\'s oldest mosque (2hrs)', 'Salaga slave market — haunting and essential history'],
     itinerary: [
       { day: 1, title: 'Welcome to the North', activities: ['Fly in, arrive at hostel', 'City orientation walk', 'Guinea fowl and TZ at the rooftop — mandatory'] },
       { day: 2, title: 'Mole Day Trip', activities: ['Early departure for Mole (2hrs)', 'Elephant spotting & game drive', 'Back to Tamale, rooftop nightlife'] },
