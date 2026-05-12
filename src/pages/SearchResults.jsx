@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import PropertyCard from '../components/PropertyCard'
-import { properties, TYPES, ACTIVITIES } from '../data/properties'
+import { properties, REGIONS, TYPES, ACTIVITIES } from '../data/properties'
 import { searchProperties } from '../utils/searchEngine'
 import { DEPARTURE_CITIES } from '../utils/driveTime'
 
@@ -22,14 +22,19 @@ const SORT_OPTIONS = [
 
 // ── Sidebar component ─────────────────────────────────────────────────────────
 
-function SearchSidebar({ baseResults, filters, setFilters, onClose }) {
+function SearchSidebar({ baseResults, defaultRegions, defaultTypes, filters, setFilters, onClose }) {
   const { regions, types, activities, priceRange, fromCity } = filters
 
-  const availableRegions = useMemo(() => {
+  const regionCounts = useMemo(() => {
     const counts = {}
     baseResults.forEach(p => { if (p.region) counts[p.region] = (counts[p.region] || 0) + 1 })
-    return Object.entries(counts).sort((a, b) => b[1] - a[1])
+    return counts
   }, [baseResults])
+
+  // All 16 regions always visible; sorted by count in results desc, then alphabetically
+  const allRegionsSorted = useMemo(() =>
+    [...REGIONS].sort((a, b) => (regionCounts[b] || 0) - (regionCounts[a] || 0) || a.localeCompare(b))
+  , [regionCounts])
 
   const maxPriceInResults = useMemo(() =>
     Math.max(...baseResults.map(p => p.priceGHS || 0).filter(Boolean), 3000)
@@ -45,8 +50,11 @@ function SearchSidebar({ baseResults, filters, setFilters, onClose }) {
     })
   }
 
+  // "Active" = user has narrowed from the default (unchecked a region/type, added activity, capped price)
   const activeCount =
-    regions.length + types.length + activities.length +
+    (regions.length < defaultRegions.length ? 1 : 0) +
+    (types.length   < defaultTypes.length   ? 1 : 0) +
+    activities.length +
     (priceRange[1] < maxPriceInResults ? 1 : 0)
 
   return (
@@ -57,7 +65,7 @@ function SearchSidebar({ baseResults, filters, setFilters, onClose }) {
         <div className="flex items-center gap-3">
           {activeCount > 0 && (
             <button
-              onClick={() => setFilters({ regions: [], types: [], activities: [], priceRange: [0, maxPriceInResults], fromCity: 'Accra' })}
+              onClick={() => setFilters({ regions: defaultRegions, types: defaultTypes, activities: [], priceRange: [0, maxPriceInResults], fromCity: 'Accra' })}
               className="font-body text-xs text-vibe-red font-bold hover:underline"
             >
               Clear all
@@ -78,18 +86,21 @@ function SearchSidebar({ baseResults, filters, setFilters, onClose }) {
             Region <span className="text-gray-400 font-normal">▾</span>
           </summary>
           <div className="space-y-2">
-            {availableRegions.map(([region, count]) => (
-              <label key={region} className="flex items-center gap-2.5 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={regions.includes(region)}
-                  onChange={() => toggleSet('regions', region)}
-                  className="w-4 h-4 rounded border-2 border-gray-300 accent-vibe-red"
-                />
-                <span className="font-body text-sm text-vibe-navy group-hover:font-bold transition-all flex-1">{region}</span>
-                <span className="font-body text-xs text-gray-400">{count}</span>
-              </label>
-            ))}
+            {allRegionsSorted.map(region => {
+              const count = regionCounts[region] || 0
+              return (
+                <label key={region} className={`flex items-center gap-2.5 cursor-pointer group ${count === 0 ? 'opacity-40' : ''}`}>
+                  <input
+                    type="checkbox"
+                    checked={regions.includes(region)}
+                    onChange={() => toggleSet('regions', region)}
+                    className="w-4 h-4 rounded border-2 border-gray-300 accent-vibe-red"
+                  />
+                  <span className="font-body text-sm text-vibe-navy group-hover:font-bold transition-all flex-1">{region}</span>
+                  <span className="font-body text-xs text-gray-400">{count > 0 ? count : '—'}</span>
+                </label>
+              )
+            })}
           </div>
         </details>
 
@@ -223,18 +234,24 @@ export default function SearchResults() {
     Math.max(...baseResults.map(p => p.priceGHS || 0).filter(Boolean), 3000)
   , [baseResults])
 
+  const defaultRegions = useMemo(() => [...new Set(baseResults.map(p => p.region).filter(Boolean))], [baseResults])
+  const defaultTypes   = useMemo(() => [...new Set(baseResults.map(p => p.type).filter(Boolean))],   [baseResults])
+
   const activeFilterCount =
-    filters.regions.length + filters.types.length + filters.activities.length +
+    (filters.regions.length < defaultRegions.length ? 1 : 0) +
+    (filters.types.length   < defaultTypes.length   ? 1 : 0) +
+    filters.activities.length +
     (filters.priceRange[1] < maxPriceInResults ? 1 : 0)
 
   // Sync inline search input when query param changes
   useEffect(() => { setInlineQuery(query) }, [query])
 
-  // Pre-select all regions found in results so users can uncheck to narrow
+  // Pre-select regions + types found in results so users can uncheck to narrow
   useEffect(() => {
     if (baseResults.length === 0) return
     const uniqueRegions = [...new Set(baseResults.map(p => p.region).filter(Boolean))]
-    setFilters(prev => ({ ...prev, regions: uniqueRegions }))
+    const uniqueTypes   = [...new Set(baseResults.map(p => p.type).filter(Boolean))]
+    setFilters(prev => ({ ...prev, regions: uniqueRegions, types: uniqueTypes }))
   }, [baseResults])
 
   useEffect(() => {
@@ -319,6 +336,8 @@ export default function SearchResults() {
         <aside className="hidden lg:flex flex-col w-60 min-w-[240px] border-r-2 border-gray-200 bg-white shrink-0 sticky top-[88px] h-[calc(100vh-88px)] overflow-hidden">
           <SearchSidebar
             baseResults={baseResults}
+            defaultRegions={defaultRegions}
+            defaultTypes={defaultTypes}
             filters={filters}
             setFilters={setFilters}
             onClose={null}
@@ -335,6 +354,8 @@ export default function SearchResults() {
             <div className="fixed inset-y-0 left-0 w-72 z-50 shadow-2xl lg:hidden flex flex-col">
               <SearchSidebar
                 baseResults={baseResults}
+                defaultRegions={defaultRegions}
+                defaultTypes={defaultTypes}
                 filters={filters}
                 setFilters={setFilters}
                 onClose={() => setSidebarOpen(false)}
@@ -398,7 +419,7 @@ export default function SearchResults() {
               <p className="font-display text-4xl text-vibe-navy uppercase mb-4">No spots found 😅</p>
               <p className="font-body text-gray-500 mb-6">Try removing a filter or start a new search.</p>
               <button
-                onClick={() => setFilters({ regions: [], types: [], activities: [], priceRange: [0, maxPriceInResults], fromCity: 'Accra' })}
+                onClick={() => setFilters({ regions: defaultRegions, types: defaultTypes, activities: [], priceRange: [0, maxPriceInResults], fromCity: 'Accra' })}
                 className="font-body font-extrabold text-sm bg-vibe-navy text-white px-6 py-3 rounded-full border-2 border-vibe-navy hover:bg-vibe-red transition-colors"
               >
                 Clear all filters
