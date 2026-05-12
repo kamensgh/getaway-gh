@@ -42,7 +42,9 @@ export default function VibeHome() {
   const [showFilters, setShowFilters] = useState(true)
   const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery]   = useState('')
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const searchWrapperRef = useRef(null)
   const [typedText,   setTypedText]   = useState('')
   const [phraseIdx,   setPhraseIdx]   = useState(0)
   const [isDeleting,  setIsDeleting]  = useState(false)
@@ -122,6 +124,36 @@ export default function VibeHome() {
     return () => clearTimeout(delay)
   }, [typedText, isDeleting, phraseIdx, searchQuery])
 
+  // ── Location suggestions ─────────────────────────────────────────────────
+  const allSuggestions = useMemo(() => {
+    const cities   = [...new Set(properties.map(p => p.city).filter(Boolean))]
+      .map(c => ({ label: c, type: 'city', icon: '📍' }))
+    const regions  = REGIONS.map(r => ({ label: r, type: 'region', icon: '🗺️' }))
+    const propNames = properties
+      .filter(p => p.vibeScore >= 8)
+      .map(p => ({ label: p.name, type: 'property', icon: '🏠', id: p.id }))
+    return [...regions, ...cities, ...propNames]
+  }, [])
+
+  const suggestions = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase()
+    if (!q || q.length < 2) return []
+    return allSuggestions
+      .filter(s => s.label.toLowerCase().includes(q))
+      .slice(0, 6)
+  }, [searchQuery, allSuggestions])
+
+  // Close suggestions on outside click
+  useEffect(() => {
+    function handleClick(e) {
+      if (searchWrapperRef.current && !searchWrapperRef.current.contains(e.target)) {
+        setShowSuggestions(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
   const activitySectionRef = useRef(null)
   const cityBtnRefs = useRef({})
 
@@ -181,15 +213,19 @@ export default function VibeHome() {
             YOUR NEXT<br />GETAWAY
           </h1>
           {/* AI Search bar */}
-          <div className="relative max-w-xl mx-auto mb-6">
-            <div className="flex items-center bg-white rounded-full border-2 border-vibe-navy shadow-btn overflow-hidden pr-1.5 pl-5 py-1.5 focus-within:border-vibe-yellow transition-colors">
+          <div ref={searchWrapperRef} className="relative max-w-xl mx-auto mb-6">
+            <div className={`flex items-center bg-white border-2 border-vibe-navy shadow-btn overflow-hidden pr-1.5 pl-5 py-1.5 transition-colors focus-within:border-vibe-yellow ${showSuggestions && suggestions.length > 0 ? 'rounded-t-3xl rounded-b-none border-b-0' : 'rounded-full'}`}>
               <span className="text-xl mr-3 shrink-0">✨</span>
               <div className="relative flex-1 flex items-center h-8">
                 <input
                   type="text"
                   value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleSearch()}
+                  onChange={e => { setSearchQuery(e.target.value); setShowSuggestions(true) }}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') { setShowSuggestions(false); handleSearch() }
+                    if (e.key === 'Escape') setShowSuggestions(false)
+                  }}
+                  onFocus={() => setShowSuggestions(true)}
                   className="w-full font-body text-sm text-vibe-navy bg-transparent outline-none"
                 />
                 {!searchQuery && (
@@ -199,12 +235,34 @@ export default function VibeHome() {
                 )}
               </div>
               <button
-                onClick={() => handleSearch()}
+                onClick={() => { setShowSuggestions(false); handleSearch() }}
                 className="shrink-0 bg-vibe-red text-white font-display text-sm px-5 py-2.5 rounded-full border-2 border-vibe-navy hover:bg-vibe-navy transition-colors ml-2 whitespace-nowrap"
               >
                 ASK AI →
               </button>
             </div>
+
+            {/* Suggestions dropdown */}
+            {showSuggestions && suggestions.length > 0 && (
+              <div className="absolute left-0 right-0 bg-white border-2 border-t-0 border-vibe-navy rounded-b-3xl shadow-btn overflow-hidden z-50">
+                {suggestions.map((s, i) => (
+                  <button
+                    key={i}
+                    onMouseDown={e => {
+                      e.preventDefault()
+                      setSearchQuery(s.label)
+                      setShowSuggestions(false)
+                      handleSearch(s.label)
+                    }}
+                    className="w-full flex items-center gap-3 px-5 py-2.5 hover:bg-vibe-yellow/20 transition-colors text-left border-t border-gray-100 first:border-t-0"
+                  >
+                    <span className="text-base shrink-0">{s.icon}</span>
+                    <span className="font-body text-sm text-vibe-navy font-semibold flex-1">{s.label}</span>
+                    <span className="font-body text-xs text-gray-400 capitalize">{s.type}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="inline-flex items-center bg-vibe-yellow text-vibe-navy font-body font-extrabold text-base px-6 py-3 rounded-full border-2 border-vibe-navy shadow-btn mb-6">
