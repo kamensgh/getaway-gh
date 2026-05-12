@@ -192,6 +192,7 @@ export default function SearchResults() {
   const [loaderStep,  setLoaderStep]  = useState(0)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [sortBy,      setSortBy]      = useState('match')
+  const [inlineQuery, setInlineQuery] = useState(query)
   const [filters, setFilters] = useState({
     regions:    [],
     types:      [],
@@ -226,6 +227,16 @@ export default function SearchResults() {
     filters.regions.length + filters.types.length + filters.activities.length +
     (filters.priceRange[1] < maxPriceInResults ? 1 : 0)
 
+  // Sync inline search input when query param changes
+  useEffect(() => { setInlineQuery(query) }, [query])
+
+  // Pre-select all regions found in results so users can uncheck to narrow
+  useEffect(() => {
+    if (baseResults.length === 0) return
+    const uniqueRegions = [...new Set(baseResults.map(p => p.region).filter(Boolean))]
+    setFilters(prev => ({ ...prev, regions: uniqueRegions }))
+  }, [baseResults])
+
   useEffect(() => {
     if (!query) { setLoading(false); return }
     setLoading(true)
@@ -241,6 +252,13 @@ export default function SearchResults() {
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
+
+  function handleInlineSearch(e) {
+    e.preventDefault()
+    const q = inlineQuery.trim()
+    if (!q) return
+    navigate(`/search?q=${encodeURIComponent(q)}`)
+  }
 
   if (loading) {
     return (
@@ -280,15 +298,15 @@ export default function SearchResults() {
     <div className="min-h-screen bg-gray-50">
 
       {/* AI Answer Banner — sticky */}
-      <div className="bg-vibe-navy pt-20 pb-3 px-4 sticky top-0 z-40 border-b-2 border-vibe-navy/50 shadow-sm">
-        <div className="max-w-6xl mx-auto flex items-center gap-3 flex-wrap">
-          <span className="font-body font-extrabold text-vibe-yellow text-xs uppercase tracking-widest shrink-0">✨ Getaway AI</span>
-          <span className="font-body text-white text-sm flex-1 min-w-0 truncate">
+      <div className="bg-vibe-navy pt-24 pb-5 px-4 sticky top-0 z-40 border-b-2 border-vibe-navy/50 shadow-sm">
+        <div className="max-w-6xl mx-auto relative text-center">
+          <p className="font-body font-extrabold text-vibe-yellow text-xs uppercase tracking-widest mb-1">✨ Getaway AI</p>
+          <p className="font-body text-white text-sm leading-snug max-w-2xl mx-auto">
             {summary || `Showing results for "${query}"`}
-          </span>
+          </p>
           <button
             onClick={() => navigate('/')}
-            className="font-body font-bold text-xs text-white/50 hover:text-white transition-colors shrink-0"
+            className="absolute right-0 top-0 font-body font-bold text-xs text-white/50 hover:text-white transition-colors"
           >
             New search ✕
           </button>
@@ -327,6 +345,26 @@ export default function SearchResults() {
 
         {/* Results column */}
         <div className="flex-1 px-4 py-6 min-w-0">
+
+          {/* Inline search bar */}
+          <form onSubmit={handleInlineSearch} className="mb-5">
+            <div className="flex items-center bg-white rounded-full border-2 border-vibe-navy shadow-btn overflow-hidden pr-1.5 pl-5 py-1.5 focus-within:border-vibe-yellow transition-colors max-w-lg">
+              <span className="text-lg mr-3 shrink-0">✨</span>
+              <input
+                type="text"
+                value={inlineQuery}
+                onChange={e => setInlineQuery(e.target.value)}
+                placeholder='Try "beach escape under GHS 1000"...'
+                className="flex-1 font-body text-sm text-vibe-navy bg-transparent outline-none placeholder:text-gray-400 placeholder:italic"
+              />
+              <button
+                type="submit"
+                className="shrink-0 bg-vibe-red text-white font-display text-sm px-5 py-2.5 rounded-full border-2 border-vibe-navy hover:bg-vibe-navy transition-colors ml-2 whitespace-nowrap"
+              >
+                ASK AI →
+              </button>
+            </div>
+          </form>
 
           {/* Toolbar */}
           <div className="flex items-center gap-3 mb-6 flex-wrap">

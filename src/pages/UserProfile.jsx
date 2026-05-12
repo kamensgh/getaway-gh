@@ -1,14 +1,42 @@
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
+import { db } from '../lib/firebase'
 import { useAuth } from '../context/AuthContext'
 import { useTripBoard } from '../context/TripBoardContext'
 import { properties, getTagClass } from '../data/properties'
 
 const REACTIONS = ['👍', '🔥', '❓']
+const BASE_URL = 'https://getaway-gh.vercel.app'
 
 export default function UserProfile() {
   const { user, signOut, signInWithGoogle } = useAuth()
   const { saved, toggle, react, hasReacted } = useTripBoard()
   const navigate = useNavigate()
+  const [shareState, setShareState] = useState('idle') // idle | sharing | copied | error
+  const [shareError, setShareError] = useState('')
+
+  async function handleShare() {
+    if (!user || shareState === 'sharing') return
+    setShareState('sharing')
+    const url = `${BASE_URL}/list/${user.uid}`
+    try {
+      await navigator.clipboard.writeText(url)
+      await setDoc(doc(db, 'publicLists', user.uid), {
+        displayName: user.displayName || 'A Traveller',
+        photoURL: user.photoURL || null,
+        saved,
+        updatedAt: serverTimestamp(),
+      })
+      setShareState('copied')
+      setTimeout(() => setShareState('idle'), 3000)
+    } catch (err) {
+      console.error('Share failed:', err)
+      setShareError(err?.message || String(err))
+      setShareState('error')
+      setTimeout(() => { setShareState('idle'); setShareError('') }, 8000)
+    }
+  }
 
   const savedProperties = properties.filter(p => saved.includes(p.id))
 
@@ -69,11 +97,20 @@ export default function UserProfile() {
                 <p className="font-body text-white/60 text-sm mt-0.5">{user.email}</p>
               </div>
             </div>
-            <button onClick={handleSignOut}
-              className="shrink-0 font-body font-bold text-sm bg-vibe-red text-white px-4 py-2 rounded-full border-2 border-white hover:bg-red-700 transition-colors shadow-btn">
-              Sign out
-            </button>
+            <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 shrink-0">
+              <button onClick={handleShare} disabled={shareState === 'sharing'}
+                className="font-body font-bold text-sm bg-vibe-yellow text-vibe-navy px-4 py-2 rounded-full border-2 border-vibe-navy hover:bg-yellow-300 transition-colors shadow-btn disabled:opacity-60">
+                {shareState === 'sharing' ? 'Sharing…' : shareState === 'copied' ? 'Link copied!' : shareState === 'error' ? 'Failed — retry' : 'Share my list'}
+              </button>
+              <button onClick={handleSignOut}
+                className="font-body font-bold text-sm bg-vibe-red text-white px-4 py-2 rounded-full border-2 border-white hover:bg-red-700 transition-colors shadow-btn">
+                Sign out
+              </button>
+            </div>
           </div>
+          {shareError && (
+            <p className="mt-3 font-body text-xs text-vibe-yellow/80 bg-white/10 rounded-lg px-3 py-2 break-all">{shareError}</p>
+          )}
 
           {/* Stats row */}
           <div className="flex gap-6 mt-6 pt-6 border-t border-white/10">

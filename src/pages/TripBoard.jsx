@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { properties, getTagClass } from '../data/properties'
 import { useTripBoard } from '../context/TripBoardContext'
 
-const REACTIONS = ['👍', '🔥', '❓']
+const REACTIONS = ['👍', '🔥', '👎']
 
 export default function TripBoard() {
   const { saved, toggle, react, hasReacted } = useTripBoard()

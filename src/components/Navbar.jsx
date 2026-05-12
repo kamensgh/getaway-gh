@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTripBoard } from '../context/TripBoardContext'
 import { useAuth } from '../context/AuthContext'
 
@@ -18,21 +18,6 @@ export default function Navbar() {
   const location = useLocation()
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
-
-  const [searchParams] = useSearchParams()
-  const isSearchPage   = location.pathname === '/search'
-  const [navQuery, setNavQuery] = useState(searchParams.get('q') || '')
-
-  useEffect(() => {
-    setNavQuery(searchParams.get('q') || '')
-  }, [searchParams])
-
-  function handleNavSearch(e) {
-    e.preventDefault()
-    const q = navQuery.trim()
-    if (!q) return
-    navigate(`/search?q=${encodeURIComponent(q)}`)
-  }
 
   const baseLinks = [
     { to: '/explore',   label: 'Explore' },
@@ -53,24 +38,7 @@ export default function Navbar() {
           Getaway<span className="text-vibe-blue">.</span><span className="text-vibe-red">gh</span>
         </Link>
 
-          {/* Compact search — only on /search page */}
-          {isSearchPage && (
-            <form onSubmit={handleNavSearch} className="hidden sm:flex flex-1 max-w-xs mx-4">
-              <div className="flex items-center w-full bg-white rounded-full border-2 border-vibe-navy px-3 py-1 gap-2">
-                <span className="text-sm">✨</span>
-                <input
-                  type="text"
-                  value={navQuery}
-                  onChange={e => setNavQuery(e.target.value)}
-                  placeholder="Search again..."
-                  className="flex-1 font-body text-xs text-vibe-navy bg-transparent outline-none placeholder:text-gray-400"
-                />
-                <button type="submit" className="font-display text-xs text-vibe-red font-black hover:text-vibe-navy transition-colors">GO</button>
-              </div>
-            </form>
-          )}
-
-        <div className="hidden sm:flex items-center gap-5 flex-1">
+<div className="hidden sm:flex items-center gap-5 flex-1">
           {links.map(l => (
             <Link key={l.to} to={l.to}
               className={`font-body text-sm font-bold transition-colors ${location.pathname === l.to ? 'text-vibe-navy' : 'text-gray-500 hover:text-vibe-navy'}`}>

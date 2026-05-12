@@ -1,0 +1,7 @@
+{"type":"server-started","port":60446,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:60446","screen_dir":"/Users/mac/Documents/projects/getaway/.superpowers/brainstorm/6392-1778580970/content","state_dir":"/Users/mac/Documents/projects/getaway/.superpowers/brainstorm/6392-1778580970/state"}
+{"type":"screen-added","file":"/Users/mac/Documents/projects/getaway/.superpowers/brainstorm/6392-1778580970/content/hero-layouts.html"}
+{"source":"user-event","type":"click","text":"Where in Ghana are you escaping to?\n      YOUR NEXTGETAWAY\n      \n        ✨\n        Try \"beach escape under GHS 1000\"...\n        ASK AI\n      \n      \n        🌊 Beach\n        🦁 Safari\n        💑 Romantic\n        🎉 Group trip\n      \n    \n    \n      A — Search Takes Center Stage\n      The AI search bar IS the hero. Tagline + title stay, but the big search bar lives right in the red hero section — with quick-pick chips below it. No separate filter panel.\n      Best for: maximising discovery feel. Users land and immediately see \"ask me anything.\"","choice":"a","id":null,"timestamp":1778581076613}
+{"type":"screen-added","file":"/Users/mac/Documents/projects/getaway/.superpowers/brainstorm/6392-1778580970/content/search-flow.html"}
+{"type":"screen-added","file":"/Users/mac/Documents/projects/getaway/.superpowers/brainstorm/6392-1778580970/content/search-results-page.html"}
+{"type":"screen-added","file":"/Users/mac/Documents/projects/getaway/.superpowers/brainstorm/6392-1778580970/content/waiting.html"}
+{"type":"server-stopped","reason":"idle timeout"}

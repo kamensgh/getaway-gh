@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { properties, getTagClass } from '../data/properties'
+import { useState, useRef, useEffect, useMemo } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
+import { properties, getTagClass, TYPES } from '../data/properties'
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
@@ -114,6 +114,90 @@ const REGION_DATA = [
     weather: ['best','best','best','good','good','wet','wet','wet','wet','good','best','best'],
     tips: ['Wechiau hippo canoe trip is best at dusk or dawn','Combine with Mole for a northern Ghana loop','Accommodation is basic — book guesthouses ahead'],
   },
+  {
+    id: 'Savannah',
+    label: 'Savannah Region',
+    emoji: '🦒',
+    color: 'bg-lime-700',
+    tagline: 'Mole elephants, Larabanga mosque, and wide open plains.',
+    description: "Created in 2019 from the former Northern Region, Savannah is home to Mole National Park — Ghana's largest protected area and the best place in West Africa to walk with elephants at dawn. Larabanga Mosque, one of the oldest in West Africa, sits just outside the park gates. The Gonja people's heartland stretches across this vast, beautiful region.",
+    highlights: ['Mole National Park', 'Larabanga Mosque', 'Damongo', 'Salaga'],
+    bestTime: 'Nov–Apr',
+    weather: ['best','best','best','good','good','wet','wet','wet','wet','good','best','best'],
+    tips: ['Book Mole lodge months ahead for peak dry season','Walking safaris start at 6:30am — worth the early rise','Salaga slave market is a sobering but important historical site'],
+  },
+  {
+    id: 'Oti',
+    label: 'Oti Region',
+    emoji: '🌿',
+    color: 'bg-emerald-700',
+    tagline: 'Forested hills and Volta tributaries — off the beaten track.',
+    description: "One of Ghana's newest regions (2019), Oti was carved from the former Volta Region. It covers the forested hills and river valleys north of Hohoe, stretching to the Togo border. The Kpandai area is the gateway — a quiet, unhurried corner of Ghana that rewards those who make the trip.",
+    highlights: ['Kpandai', 'Nkwanta Hills', 'Oti River', 'Dambai'],
+    bestTime: 'Nov–Feb',
+    weather: ['best','best','good','wet','wet','wet','wet','wet','wet','good','good','best'],
+    tips: ['Roads to Nkwanta can be rough — a 4WD is recommended in rainy season','Combine with Volta Region highlights in Hohoe','Very few tourists — a genuine off-the-beaten-path experience'],
+  },
+  {
+    id: 'Western North',
+    label: 'Western North',
+    emoji: '🪵',
+    color: 'bg-stone-600',
+    tagline: 'Cocoa country, gold mines, and untouched forest reserves.',
+    description: "Separated from the Western Region in 2019, Western North is dominated by lush forest reserves, cocoa and rubber plantations, and the gold-mining towns of Bibiani and Sefwi Wiawso. Less visited than coastal Western Region, it offers a quieter, more authentic glimpse of Ghana's interior forest belt.",
+    highlights: ['Sefwi Wiawso', 'Bibiani Gold Town', 'Bia Conservation Area', 'Aowin'],
+    bestTime: 'Nov–Feb',
+    weather: ['best','best','good','wet','wet','wet','wet','wet','wet','wet','good','best'],
+    tips: ['Bia Conservation Area has chimpanzees — guided forest walks available','Roads improve significantly in dry season','Sefwi Wiawso market is best on weekends'],
+  },
+  {
+    id: 'Bono',
+    label: 'Bono Region',
+    emoji: '🌾',
+    color: 'bg-yellow-700',
+    tagline: 'Sunyani, festivals, and the cocoa heartland.',
+    description: "Formerly the western half of the old Brong-Ahafo Region, Bono takes its name from the ancient Bono Kingdom — one of the oldest Akan states. The regional capital Sunyani is a relaxed, tree-lined city. Dormaa near the Côte d'Ivoire border has a vibrant yam and kola nut market culture.",
+    highlights: ['Sunyani', 'Dormaa', 'Wenchi', 'Berekum'],
+    bestTime: 'Nov–Feb & Jul–Aug',
+    weather: ['best','best','good','wet','wet','wet','good','best','wet','wet','good','best'],
+    tips: ['Sunyani is a pleasant base for exploring the region','Dormaa festival season is September–November','Roads are generally good throughout the region'],
+  },
+  {
+    id: 'Bono East',
+    label: 'Bono East Region',
+    emoji: '🐒',
+    color: 'bg-orange-600',
+    tagline: 'Kintampo Falls, monkey sanctuaries, and Techiman market.',
+    description: "Bono East covers the central middle belt of Ghana. Kintampo Falls is one of the most dramatic waterfalls in the country — wide, thundering, and hidden behind jungle. Boabeng-Fiema Monkey Sanctuary protects sacred black-and-white colobus monkeys that walk freely through the village.",
+    highlights: ['Kintampo Falls', 'Boabeng-Fiema Monkey Sanctuary', 'Techiman Market', 'Atebubu'],
+    bestTime: 'Nov–Feb & Jul–Aug',
+    weather: ['best','best','good','wet','wet','wet','good','best','wet','wet','good','best'],
+    tips: ['Kintampo Falls: swim in the pools below the main cascade','Boabeng-Fiema monkeys are habituated — they approach visitors','Techiman has one of Ghana\'s largest weekly markets (Monday)'],
+  },
+  {
+    id: 'Ahafo',
+    label: 'Ahafo Region',
+    emoji: '🌳',
+    color: 'bg-green-800',
+    tagline: "Ghana's quiet forest interior — cocoa and conservation.",
+    description: "Ahafo — meaning 'people of the forest' — is one of Ghana's newest and least-visited regions. Carved from the old Brong-Ahafo, it covers deep forest territory southwest of Kumasi. The Tano Sacred Grove near Techiman protects ancient trees and wildlife. Goaso is the unhurried regional capital.",
+    highlights: ['Goaso', 'Tano Sacred Grove', 'Kenyasi', 'Bechem'],
+    bestTime: 'Nov–Feb',
+    weather: ['best','best','good','wet','wet','wet','wet','wet','wet','wet','good','best'],
+    tips: ['Tano Sacred Grove is one of Ghana\'s most serene nature experiences','Forest roads can be challenging in the rainy season','Combine with a Kumasi or Western trip for a broader loop'],
+  },
+  {
+    id: 'North East',
+    label: 'North East Region',
+    emoji: '🏇',
+    color: 'bg-red-800',
+    tagline: 'Ancient kingdoms, horse festivals, and open grasslands.',
+    description: "The North East was split from Northern Region in 2019 and is centred on the ancient Mamprugu Kingdom. Nalerigu, the old royal capital, has a 13th-century palace. The Gambaga escarpment offers dramatic views across the savanna. Horse-mounted warriors remain a living tradition at the region's festivals.",
+    highlights: ['Nalerigu Palace', 'Gambaga Escarpment', 'Bunkpurugu', 'Chereponi'],
+    bestTime: 'Oct–Apr',
+    weather: ['best','best','best','good','good','good','wet','wet','good','best','best','best'],
+    tips: ['Nalerigu palace is open to respectful visitors — announce yourself','Gambaga is a 1-hour drive from Tamale — combine with a northern loop','Very few tourist facilities — bring supplies from Tamale'],
+  },
 ]
 
 const WEATHER_COLORS = {
@@ -153,9 +237,61 @@ function WeatherCalendar({ weather }) {
 }
 
 export default function ExploreGhana() {
-  const [selectedRegion, setSelectedRegion] = useState(null)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const selectedRegion = searchParams.get('region') || null
+  const filterCity    = searchParams.get('city') || ''
+  const filterType    = searchParams.get('type') || ''
+  const visible       = Number(searchParams.get('show') || 11)
+
+  const setSelectedRegion = (region) => setSearchParams(p => {
+    const next = new URLSearchParams(p)
+    if (region) { next.set('region', region); next.delete('city'); next.delete('type'); next.set('show', '11') }
+    else { next.delete('region'); next.delete('city'); next.delete('type'); next.delete('show') }
+    return next
+  }, { replace: true })
+
+  const setFilterCity = (city) => setSearchParams(p => {
+    const next = new URLSearchParams(p)
+    city ? next.set('city', city) : next.delete('city')
+    next.set('show', '11')
+    return next
+  }, { replace: true })
+
+  const setFilterType = (type) => setSearchParams(p => {
+    const next = new URLSearchParams(p)
+    type ? next.set('type', type) : next.delete('type')
+    next.set('show', '11')
+    return next
+  }, { replace: true })
+
+  const setVisible = (fn) => setSearchParams(p => {
+    const next = new URLSearchParams(p)
+    const current = Number(p.get('show') || 11)
+    next.set('show', String(typeof fn === 'function' ? fn(current) : fn))
+    return next
+  }, { replace: true })
+
   const active = REGION_DATA.find(r => r.id === selectedRegion)
-  const regionProperties = selectedRegion ? properties.filter(p => p.region === selectedRegion) : []
+
+  const regionProperties = useMemo(() => {
+    if (!selectedRegion) return []
+    return properties.filter(p => {
+      if (p.region !== selectedRegion) return false
+      if (filterCity && p.city !== filterCity) return false
+      if (filterType && p.type !== filterType) return false
+      return true
+    })
+  }, [selectedRegion, filterCity, filterType])
+
+  const cityOptions = useMemo(() => {
+    if (!selectedRegion) return []
+    const counts = {}
+    properties.filter(p => p.region === selectedRegion).forEach(p => {
+      if (p.city) counts[p.city] = (counts[p.city] || 0) + 1
+    })
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([c]) => c)
+  }, [selectedRegion])
+
   const detailRef = useRef(null)
 
   useEffect(() => {
@@ -242,42 +378,86 @@ export default function ExploreGhana() {
             <WeatherCalendar weather={active.weather} />
           </div>
 
-          {regionProperties.length > 0 ? (
+          {properties.filter(p => p.region === selectedRegion).length > 0 ? (
             <>
               <p className="font-cursive text-vibe-yellow text-xl mb-4">spots in {active.label}</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {regionProperties.map(p => (
-                  <div key={p.id} className="property-card bg-white rounded-xl2 border-2 border-vibe-navy shadow-card overflow-hidden"
-                    style={{ transform: `rotate(${p.rotate})` }}>
-                    <Link to={`/property/${p.id}`}>
-                      <div className="relative h-44 overflow-hidden border-b-2 border-vibe-navy">
-                        <img src={p.image} alt={p.name} className="card-img w-full h-full object-cover" />
-                        <span className={`absolute top-2 right-2 ${p.priceTag} font-display text-xs px-2 py-0.5 rounded-full border border-vibe-navy`}>
-                          GHS {p.priceGHS.toLocaleString()}
-                        </span>
-                        {p.verified && (
-                          <span className="absolute bottom-2 left-2 bg-white text-vibe-navy font-body text-xs font-bold px-2 py-0.5 rounded-full border border-vibe-navy">
-                            ✓ Verified
-                          </span>
-                        )}
-                      </div>
-                      <div className="p-4">
-                        <h3 className="font-display text-base text-vibe-navy uppercase leading-tight mb-1">{p.name}</h3>
-                        <p className="font-body text-xs text-vibe-blue font-bold uppercase tracking-wide mb-2">{p.district}</p>
-                        <div className="flex flex-wrap gap-1.5 mb-2">
-                          {p.tags.slice(0, 2).map(tag => (
-                            <span key={tag} className={`${getTagClass(tag)} font-body text-xs font-bold px-2 py-0.5 rounded-full`}>{tag}</span>
-                          ))}
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="font-body text-xs text-gray-500">{p.type}</span>
-                          <span className="font-display text-sm bg-vibe-navy text-white px-2 py-0.5 rounded-full">🔥 {p.vibeScore}</span>
-                        </div>
-                      </div>
-                    </Link>
-                  </div>
-                ))}
+
+              {/* Filter bar — no region selector */}
+              <div className="grid grid-cols-2 gap-3 mb-6 p-4 bg-white rounded-2xl border-2 border-vibe-navy shadow-card">
+                <div>
+                  <label className="font-body font-extrabold text-xs text-vibe-navy uppercase tracking-wider block mb-1.5">City</label>
+                  <select value={filterCity} onChange={e => setFilterCity(e.target.value)}
+                    className="w-full border-2 border-vibe-navy rounded-xl px-3 py-2 font-body text-sm focus:outline-none focus:ring-2 focus:ring-vibe-blue">
+                    <option value="">All cities</option>
+                    {cityOptions.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="font-body font-extrabold text-xs text-vibe-navy uppercase tracking-wider block mb-1.5">Type</label>
+                  <select value={filterType} onChange={e => setFilterType(e.target.value)}
+                    className="w-full border-2 border-vibe-navy rounded-xl px-3 py-2 font-body text-sm focus:outline-none focus:ring-2 focus:ring-vibe-blue">
+                    <option value="">All types</option>
+                    {TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                </div>
               </div>
+
+              {regionProperties.length === 0 ? (
+                <div className="text-center py-10">
+                  <p className="font-display text-2xl text-white uppercase mb-3">No spots match</p>
+                  <button onClick={() => setSearchParams(p => { const n = new URLSearchParams(p); n.delete('city'); n.delete('type'); n.set('show','11'); return n }, { replace: true })}
+                    className="font-body font-bold text-sm text-vibe-navy bg-vibe-yellow px-5 py-2 rounded-full border-2 border-vibe-navy">
+                    Clear filters
+                  </button>
+                </div>
+              ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {regionProperties.slice(0, visible).map(p => {
+                  const img = p.image || p.images?.[0] || ''
+                  const tags = p.tags || []
+                  return (
+                    <div key={p.id} className="property-card bg-white rounded-xl2 border-2 border-vibe-navy shadow-card overflow-hidden"
+                      style={p.rotate ? { transform: `rotate(${p.rotate})` } : undefined}>
+                      <Link to={`/property/${p.id}`}>
+                        <div className="relative h-44 overflow-hidden border-b-2 border-vibe-navy">
+                          <img src={img} alt={p.name} className="card-img w-full h-full object-cover" />
+                          {p.priceGHS && p.priceTag && (
+                            <span className={`absolute top-2 right-2 ${p.priceTag} font-display text-xs px-2 py-0.5 rounded-full border border-vibe-navy`}>
+                              GHS {p.priceGHS.toLocaleString()}
+                            </span>
+                          )}
+                        </div>
+                        <div className="p-4">
+                          <h3 className="font-display text-base text-vibe-navy uppercase leading-tight mb-1">{p.name}</h3>
+                          <p className="font-body text-xs text-vibe-blue font-bold uppercase tracking-wide mb-2">{p.city || p.district}</p>
+                          <div className="flex flex-wrap gap-1.5 mb-2">
+                            {tags.slice(0, 2).map(tag => (
+                              <span key={tag} className={`${getTagClass(tag)} font-body text-xs font-bold px-2 py-0.5 rounded-full`}>{tag}</span>
+                            ))}
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="font-body text-xs text-gray-500">{p.type}</span>
+                          </div>
+                        </div>
+                      </Link>
+                    </div>
+                  )
+                })}
+
+                {/* See more card */}
+                {visible < regionProperties.length && (
+                  <button
+                    onClick={() => setVisible(v => v + 9)}
+                    className="bg-vibe-yellow rounded-xl2 border-2 border-vibe-navy shadow-card p-8 flex flex-col items-center justify-center text-center min-h-[280px] hover:bg-white transition-colors group">
+                    <span className="font-display text-4xl mb-3 group-hover:scale-110 transition-transform block">+</span>
+                    <p className="font-display text-xl text-vibe-navy uppercase leading-tight mb-1">See more</p>
+                    <p className="font-body text-xs text-vibe-navy/60">
+                      {regionProperties.length - visible} more spot{regionProperties.length - visible !== 1 ? 's' : ''}
+                    </p>
+                  </button>
+                )}
+              </div>
+              )}
             </>
           ) : (
             <div className="text-center py-12">
