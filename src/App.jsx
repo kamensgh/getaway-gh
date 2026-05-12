@@ -8,6 +8,9 @@ import PropertyDetail from './pages/PropertyDetail'
 import TripBoard from './pages/TripBoard'
 import ExploreGhana from './pages/ExploreGhana'
 import UserProfile from './pages/UserProfile'
+import SharedList from './pages/SharedList'
+import Festivals from './pages/Festivals'
+import SearchResults from './pages/SearchResults'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -26,6 +29,9 @@ function AppRoutes() {
         <Route path="/board"         element={<TripBoard />} />
         <Route path="/explore"       element={<ExploreGhana />} />
         <Route path="/profile"       element={<UserProfile />} />
+        <Route path="/list/:uid"     element={<SharedList />} />
+        <Route path="/festivals"     element={<Festivals />} />
+        <Route path="/search"        element={<SearchResults />} />
         <Route path="*"              element={<VibeHome />} />
       </Routes>
     </>
