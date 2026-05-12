@@ -43,8 +43,9 @@ export default function VibeHome() {
   const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
-  const [placeholderIdx,  setPlaceholderIdx]  = useState(0)
-  const [placeholderShow, setPlaceholderShow] = useState(true)
+  const [typedText,   setTypedText]   = useState('')
+  const [phraseIdx,   setPhraseIdx]   = useState(0)
+  const [isDeleting,  setIsDeleting]  = useState(false)
 
   const handleSearch = useCallback((q) => {
     const trimmed = (q || searchQuery).trim()
@@ -104,15 +105,22 @@ export default function VibeHome() {
   }, [])
 
   useEffect(() => {
-    const id = setInterval(() => {
-      setPlaceholderShow(false)
-      setTimeout(() => {
-        setPlaceholderIdx(i => (i + 1) % SEARCH_PLACEHOLDERS.length)
-        setPlaceholderShow(true)
-      }, 350)
-    }, 3000)
-    return () => clearInterval(id)
-  }, [])
+    if (searchQuery) return  // pause while user is typing
+    const phrase = SEARCH_PLACEHOLDERS[phraseIdx]
+    let delay
+    if (!isDeleting && typedText === phrase) {
+      delay = setTimeout(() => setIsDeleting(true), 1800)
+    } else if (isDeleting && typedText === '') {
+      setIsDeleting(false)
+      setPhraseIdx(i => (i + 1) % SEARCH_PLACEHOLDERS.length)
+      return
+    } else if (isDeleting) {
+      delay = setTimeout(() => setTypedText(t => t.slice(0, -1)), 35)
+    } else {
+      delay = setTimeout(() => setTypedText(phrase.slice(0, typedText.length + 1)), 60)
+    }
+    return () => clearTimeout(delay)
+  }, [typedText, isDeleting, phraseIdx, searchQuery])
 
   const toggleActivity = useCallback((id) => {
     setSearchParams(prev => {
@@ -149,12 +157,8 @@ export default function VibeHome() {
           <h1 className="font-display text-6xl sm:text-7xl md:text-8xl text-white uppercase leading-none tracking-tight mb-6">
             YOUR NEXT<br />GETAWAY
           </h1>
-          <div className="inline-flex items-center bg-vibe-yellow text-vibe-navy font-body font-extrabold text-base px-6 py-3 rounded-full border-2 border-vibe-navy shadow-btn mb-8">
-            Hotels • Eco Lodges • Beach Houses • Airbnb
-          </div>
-
           {/* AI Search bar */}
-          <div className="relative max-w-xl mx-auto mb-5">
+          <div className="relative max-w-xl mx-auto mb-6">
             <div className="flex items-center bg-white rounded-full border-2 border-vibe-navy shadow-btn overflow-hidden pr-1.5 pl-5 py-1.5 focus-within:border-vibe-yellow transition-colors">
               <span className="text-xl mr-3 shrink-0">✨</span>
               <div className="relative flex-1 flex items-center h-8">
@@ -166,11 +170,8 @@ export default function VibeHome() {
                   className="w-full font-body text-sm text-vibe-navy bg-transparent outline-none"
                 />
                 {!searchQuery && (
-                  <span
-                    className="absolute inset-0 flex items-center pointer-events-none font-body text-sm italic text-gray-400 transition-opacity duration-300 whitespace-nowrap overflow-hidden"
-                    style={{ opacity: placeholderShow ? 1 : 0 }}
-                  >
-                    {SEARCH_PLACEHOLDERS[placeholderIdx]}
+                  <span className="absolute inset-0 flex items-center pointer-events-none font-body text-sm italic text-gray-400 whitespace-nowrap overflow-hidden">
+                    {typedText}<span className="animate-pulse not-italic text-gray-300">|</span>
                   </span>
                 )}
               </div>
@@ -181,6 +182,10 @@ export default function VibeHome() {
                 ASK AI →
               </button>
             </div>
+          </div>
+
+          <div className="inline-flex items-center bg-vibe-yellow text-vibe-navy font-body font-extrabold text-base px-6 py-3 rounded-full border-2 border-vibe-navy shadow-btn mb-6">
+            Hotels • Eco Lodges • Beach Houses • Airbnb
           </div>
 
           {/* Quick-pick chips */}
