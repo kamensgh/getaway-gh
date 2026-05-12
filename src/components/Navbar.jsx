@@ -31,17 +31,23 @@ export default function Navbar() {
     signInWithGoogle() // triggers redirect — page navigates away
   }
 
+  const isSearch = location.pathname === '/search'
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 pt-4">
-      <nav className="navbar-pill rounded-full px-5 py-3 flex items-center gap-4 w-full max-w-2xl">
-        <Link to="/" className="font-display text-xl text-vibe-navy tracking-tight shrink-0">
+    <header className={`fixed top-0 left-0 right-0 z-50 ${isSearch ? 'bg-vibe-navy border-b-2 border-white/10 shadow-lg px-6 py-0' : 'flex justify-center px-4 pt-4'}`}>
+      <nav className={isSearch ? 'flex items-center gap-4 h-[64px] max-w-6xl mx-auto w-full' : 'navbar-pill rounded-full px-5 py-3 flex items-center gap-4 w-full max-w-2xl'}>
+        <Link to="/" className={`font-display text-xl tracking-tight shrink-0 ${isSearch ? 'text-white' : 'text-vibe-navy'}`}>
           Getaway<span className="text-vibe-blue">.</span><span className="text-vibe-red">gh</span>
         </Link>
 
-<div className="hidden sm:flex items-center gap-5 flex-1">
+        <div className="hidden sm:flex items-center gap-5 flex-1">
           {links.map(l => (
             <Link key={l.to} to={l.to}
-              className={`font-body text-sm font-bold transition-colors ${location.pathname === l.to ? 'text-vibe-navy' : 'text-gray-500 hover:text-vibe-navy'}`}>
+              className={`font-body text-sm font-bold transition-colors ${
+                location.pathname === l.to
+                  ? (isSearch ? 'text-vibe-yellow' : 'text-vibe-navy')
+                  : (isSearch ? 'text-white/60 hover:text-white' : 'text-gray-500 hover:text-vibe-navy')
+              }`}>
               {l.label}
               {l.count > 0 && (
                 <span className="ml-1 bg-vibe-red text-white text-xs rounded-full px-1.5 py-0.5 font-black">{l.count}</span>
@@ -53,7 +59,7 @@ export default function Navbar() {
         <div className="ml-auto flex items-center gap-2 shrink-0">
           {user ? (
             <button onClick={() => navigate('/profile')}
-              className="w-9 h-9 rounded-full border-2 border-vibe-navy overflow-hidden shadow-btn hover:scale-105 transition-transform"
+              className={`w-9 h-9 rounded-full border-2 overflow-hidden hover:scale-105 transition-transform ${isSearch ? 'border-white/40' : 'border-vibe-navy shadow-btn'}`}
               title={user.displayName || 'My Profile'}>
               {user.photoURL
                 ? <img src={user.photoURL} alt={user.displayName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
@@ -64,18 +70,21 @@ export default function Navbar() {
             </button>
           ) : (
             <button onClick={handleSignIn}
-              className="hidden sm:flex items-center gap-1.5 font-body font-bold text-sm text-vibe-navy bg-white border-2 border-vibe-navy px-3 py-1.5 rounded-full hover:bg-vibe-yellow transition-colors shadow-btn">
+              className={`hidden sm:flex items-center gap-1.5 font-body font-bold text-sm px-3 py-1.5 rounded-full transition-colors ${
+                isSearch
+                  ? 'text-white border-2 border-white/40 hover:bg-white/10'
+                  : 'text-vibe-navy bg-white border-2 border-vibe-navy hover:bg-vibe-yellow shadow-btn'
+              }`}>
               <GoogleIcon />
               Sign in
             </button>
           )}
-
         </div>
 
         <button className="sm:hidden ml-2 flex flex-col gap-1.5 p-1" onClick={() => setMenuOpen(o => !o)} aria-label="Menu">
-          <span className={`block w-5 h-0.5 bg-vibe-navy transition-all ${menuOpen ? 'rotate-45 translate-y-2' : ''}`}/>
-          <span className={`block w-5 h-0.5 bg-vibe-navy transition-opacity ${menuOpen ? 'opacity-0' : ''}`}/>
-          <span className={`block w-5 h-0.5 bg-vibe-navy transition-all ${menuOpen ? '-rotate-45 -translate-y-2' : ''}`}/>
+          <span className={`block w-5 h-0.5 transition-all ${isSearch ? 'bg-white' : 'bg-vibe-navy'} ${menuOpen ? 'rotate-45 translate-y-2' : ''}`}/>
+          <span className={`block w-5 h-0.5 transition-opacity ${isSearch ? 'bg-white' : 'bg-vibe-navy'} ${menuOpen ? 'opacity-0' : ''}`}/>
+          <span className={`block w-5 h-0.5 transition-all ${isSearch ? 'bg-white' : 'bg-vibe-navy'} ${menuOpen ? '-rotate-45 -translate-y-2' : ''}`}/>
         </button>
       </nav>
 

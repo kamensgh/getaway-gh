@@ -326,11 +326,11 @@ export default function SearchResults() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pt-[64px]">
 
-      {/* AI Answer Banner — sticky, only shown when there's an active query */}
+      {/* AI Answer Banner — only shown when there's an active query */}
       {query && (
-        <div className="bg-vibe-navy pt-24 pb-5 px-4 sticky top-0 z-40 border-b-2 border-vibe-navy/50 shadow-sm">
+        <div className="bg-vibe-navy pt-6 pb-5 px-4 border-b-2 border-white/10 shadow-sm">
           <div className="max-w-6xl mx-auto relative text-center">
             <p className="font-body font-extrabold text-vibe-yellow text-xs uppercase tracking-widest mb-1">✨ Getaway AI</p>
             <p className="font-body text-white text-sm leading-snug max-w-2xl mx-auto">
