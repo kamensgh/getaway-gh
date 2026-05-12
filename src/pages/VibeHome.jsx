@@ -452,37 +452,6 @@ export default function VibeHome() {
         </div>
       </section>
 
-      {/* ── SCRAPBOOK CTA ────────────────────────────────── */}
-      <section className="px-4 py-14 bg-vibe-blue polka-bg relative overflow-hidden">
-        <div className="absolute right-8 top-1/2 -translate-y-1/2 hidden md:flex items-start gap-2 pointer-events-none">
-          {[
-            { rotate: '-8deg', bg: 'bg-white', label: 'GETAWAY: 10/10', seed: 'polar1' },
-            { rotate: '4deg',  bg: 'bg-vibe-yellow', label: '', seed: 'polar2' },
-            { rotate: '13deg', bg: 'bg-white', label: '', seed: 'polar3' },
-          ].map((p, i) => (
-            <div key={i} className={`${p.bg} w-28 h-36 rounded border-2 border-vibe-navy shadow-card flex flex-col`}
-              style={{ transform: `rotate(${p.rotate})`, marginTop: i * 8 }}>
-              <div className="flex-1 bg-gray-100 m-2 rounded-sm overflow-hidden">
-                <img src={`https://picsum.photos/seed/${p.seed}/200/150`} alt="" className="w-full h-full object-cover" />
-              </div>
-              {p.label && <p className="font-cursive text-vibe-navy text-xs text-center pb-2">{p.label}</p>}
-            </div>
-          ))}
-        </div>
-
-        <div className="max-w-lg relative z-10">
-          <p className="font-cursive text-vibe-yellow text-2xl mb-2">save your favourite spots</p>
-          <h2 className="font-display text-5xl sm:text-6xl text-white uppercase leading-tight mb-4">
-            ADD TO THE<br />SCRAPBOOK
-          </h2>
-          <p className="font-body font-bold text-white/90 text-base mb-8 max-w-sm leading-relaxed">
-            Found a hidden gem in Ghana? Save your spots and share them with friends planning their next getaway.
-          </p>
-          <Link to="/board" className="vibe-btn inline-flex items-center gap-2 bg-vibe-yellow text-vibe-navy font-display text-base px-8 py-4 rounded-full border-2 border-vibe-navy">
-            UPLOAD PHOTOS 📸
-          </Link>
-        </div>
-      </section>
 
       {/* ── FOOTER ───────────────────────────────────────── */}
       <footer className="bg-vibe-navy py-6 text-center">
