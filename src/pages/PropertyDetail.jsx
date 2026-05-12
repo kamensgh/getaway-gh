@@ -282,16 +282,20 @@ export default function PropertyDetail() {
             {/* Transport */}
             {p.transport && (
               <div className="bg-white rounded-xl border-2 border-vibe-navy shadow-card p-4 mb-6">
-                <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-3">🚗 Getting there</p>
-
-                {/* City selector */}
-                <div className="flex flex-wrap gap-1.5 mb-3">
-                  {DEPARTURE_CITIES.map(c => (
-                    <button key={c.id} onClick={() => setFromCity(c.id)}
-                      className={`font-body font-extrabold text-[11px] px-2.5 py-1 rounded-full border-2 transition-colors ${fromCity === c.id ? 'bg-vibe-navy text-white border-vibe-navy' : 'text-vibe-navy border-vibe-navy/30 hover:border-vibe-navy'}`}>
-                      {c.id}
-                    </button>
-                  ))}
+                <div className="flex items-center justify-between mb-3">
+                  <p className="font-display text-xs text-vibe-navy uppercase tracking-wider">🚗 Getting there</p>
+                  <div className="flex items-center gap-2">
+                    <span className="font-body text-xs text-gray-500">from</span>
+                    <select
+                      value={fromCity}
+                      onChange={e => setFromCity(e.target.value)}
+                      className="font-body font-bold text-xs text-vibe-navy border-2 border-vibe-navy rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-vibe-yellow"
+                    >
+                      {DEPARTURE_CITIES.map(c => (
+                        <option key={c.id} value={c.id}>{c.id}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
                 {driveTime && (
