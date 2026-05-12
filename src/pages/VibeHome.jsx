@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import PropertyCard from '../components/PropertyCard'
 import ActivityFilter from '../components/ActivityFilter'
@@ -122,7 +122,14 @@ export default function VibeHome() {
     return () => clearTimeout(delay)
   }, [typedText, isDeleting, phraseIdx, searchQuery])
 
+  const activitySectionRef = useRef(null)
+
   const toggleActivity = useCallback((id) => {
+    // Desktop only: scroll so the activity section sits just under the navbar
+    if (window.innerWidth >= 1024 && activitySectionRef.current) {
+      const top = activitySectionRef.current.getBoundingClientRect().top + window.scrollY - 72
+      window.scrollTo({ top, behavior: 'smooth' })
+    }
     setSearchParams(prev => {
       const next = new URLSearchParams(prev)
       const current = (next.get('activities') || '').split(',').filter(Boolean)
@@ -192,7 +199,7 @@ export default function VibeHome() {
       </section>
 
       {/* ── ACTIVITY FILTER ──────────────────────────────── */}
-      <section className="px-4 py-8 bg-vibe-navy">
+      <section ref={activitySectionRef} className="px-4 py-8 bg-vibe-navy">
         <div className="max-w-5xl mx-auto">
           <p className="font-cursive text-vibe-yellow text-xl text-center mb-5">what's your getaway style?</p>
           <ActivityFilter selected={selectedActivities} onToggle={toggleActivity} />
