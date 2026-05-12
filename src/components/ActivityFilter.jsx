@@ -29,14 +29,6 @@ export default function ActivityFilter({ selected, onToggle, onClearAll }) {
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
   }, [selected])
 
-  const clearBtn = (
-    <button
-      onClick={onClearAll}
-      className="activity-pill font-body font-extrabold text-sm px-5 py-2.5 rounded-full border-2 border-vibe-navy bg-vibe-red text-white whitespace-nowrap hover:bg-red-700 transition-all"
-    >
-      ✕ Clear all
-    </button>
-  )
 
   return (
     <>
@@ -59,7 +51,6 @@ export default function ActivityFilter({ selected, onToggle, onClearAll }) {
               btnRef={el => { mobileRefs.current[a.id] = el }}
             />
           ))}
-          {clearBtn}
         </div>
       </div>
 
@@ -74,8 +65,19 @@ export default function ActivityFilter({ selected, onToggle, onClearAll }) {
             btnRef={null}
           />
         ))}
-        {clearBtn}
       </div>
+
+      {/* Clear all — below the grid, only when something is selected */}
+      {selected.length > 0 && (
+        <div className="flex justify-center mt-4">
+          <button
+            onClick={onClearAll}
+            className="activity-pill font-body font-extrabold text-sm px-5 py-2.5 rounded-full border-2 border-vibe-navy bg-vibe-red text-white hover:bg-red-700 transition-all"
+          >
+            ✕ Clear all
+          </button>
+        </div>
+      )}
     </>
   )
 }
