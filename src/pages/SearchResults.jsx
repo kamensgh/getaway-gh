@@ -218,9 +218,13 @@ export default function SearchResults() {
     return res
   }, [baseResults, filters, sortBy])
 
+  const maxPriceInResults = useMemo(() =>
+    Math.max(...baseResults.map(p => p.priceGHS || 0).filter(Boolean), 3000)
+  , [baseResults])
+
   const activeFilterCount =
     filters.regions.length + filters.types.length + filters.activities.length +
-    (filters.priceRange[1] < 5000 ? 1 : 0)
+    (filters.priceRange[1] < maxPriceInResults ? 1 : 0)
 
   useEffect(() => {
     if (!query) { setLoading(false); return }
@@ -356,7 +360,7 @@ export default function SearchResults() {
               <p className="font-display text-4xl text-vibe-navy uppercase mb-4">No spots found 😅</p>
               <p className="font-body text-gray-500 mb-6">Try removing a filter or start a new search.</p>
               <button
-                onClick={() => setFilters({ regions: [], types: [], activities: [], priceRange: [0, 5000], fromCity: 'Accra' })}
+                onClick={() => setFilters({ regions: [], types: [], activities: [], priceRange: [0, maxPriceInResults], fromCity: 'Accra' })}
                 className="font-body font-extrabold text-sm bg-vibe-navy text-white px-6 py-3 rounded-full border-2 border-vibe-navy hover:bg-vibe-red transition-colors"
               >
                 Clear all filters
