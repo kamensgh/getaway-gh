@@ -11,7 +11,7 @@ export const FESTIVALS = {
       emoji: '💃',
       description: 'Coming-of-age rite of the Krobo people — colourful beads, drumming, and processions through the valley.',
       body: "The Dipo ceremony marks the transition of young Krobo women into adulthood and is one of Ghana's most visually stunning cultural rites. Spanning three to five days, participants are adorned in layers of handcrafted Krobo glass beads and vibrant cloth, dancing through the valley to the steady beat of fontomfrom drums. The air fills with colour, song, and community pride. If you're visiting in June, ask the lodge to help you arrange respectful attendance — it's an experience that stays with you.",
-      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Bolgatanga_market_fruit_and_veg_stall_2013.jpg/640px-Bolgatanga_market_fruit_and_veg_stall_2013.jpg',
+      image: 'https://upload.wikimedia.org/wikipedia/commons/a/a8/Krobo-girl-beads1.jpg',
     },
     {
       name: 'Kloyosikplem Harvest',
@@ -19,7 +19,7 @@ export const FESTIVALS = {
       emoji: '🌾',
       description: 'Yilo Krobo thanksgiving harvest — fresh palm wine, homecoming, and communal feasting.',
       body: "Kloyosikplem — meaning 'let us give thanks' — is the Yilo Krobo's annual harvest thanksgiving held every November. Families return from across Ghana and the diaspora, carrying first fruits to ancestral shrines and pouring libations at the edge of the valley. Fresh palm wine flows freely, roasted yam fills the air, and drumming and dancing continue well into the night. The festival has a genuine homecoming warmth that's rare to witness.",
-      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/A_little_girl_in_Bolga.jpg/480px-A_little_girl_in_Bolga.jpg',
+      image: 'https://upload.wikimedia.org/wikipedia/commons/1/1a/Krobo_Woman_trad_2015_B002.jpg',
     },
     {
       name: 'Odwira Festival',
@@ -27,7 +27,7 @@ export const FESTIVALS = {
       emoji: '🥁',
       description: 'Akwapim and Krobo purification festival — ancestral rites, fresh yam eating, and street celebrations.',
       body: "Odwira is the great purification and harvest festival that marks the close of the Akan year. Priests perform rites at sacred shrines, families deep-clean their homes, and fresh yam is eaten for the first time in the new season. Towns along the Akuapem ridge celebrate consecutively across October, so you can often catch multiple Odwira celebrations in a single visit to the Eastern Region — each one with its own royal durbar and street processions.",
-      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/A_Young_Ghanaian_Basketry_Craftman.jpg/480px-A_Young_Ghanaian_Basketry_Craftman.jpg',
+      image: 'https://upload.wikimedia.org/wikipedia/commons/6/6f/Carrying_in_Chiefs.jpg',
     },
   ],
   9: [ // Aburi Mountain Retreat — Akuapem North
