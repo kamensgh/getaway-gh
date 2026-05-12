@@ -1,8 +1,10 @@
-import { useState, useEffect, useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect, useMemo, useCallback } from 'react'
+import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import PropertyCard from '../components/PropertyCard'
 import ActivityFilter from '../components/ActivityFilter'
 import { properties, REGIONS, TYPES, EDITORIAL_PICKS } from '../data/properties'
+import { DEPARTURE_CITIES } from '../utils/driveTime'
+import { getUpcomingFestivals } from '../data/festivals'
 import socialFeed from '../data/social-feed.json'
 
 const TAGLINES = [
@@ -13,15 +15,73 @@ const TAGLINES = [
   "The weekend is calling. Who's answering?",
 ]
 
+const QUICK_CHIPS = [
+  { label: '🌊 Beach weekend',    query: 'beach weekend' },
+  { label: '🦁 Safari & wildlife', query: 'safari wildlife mole' },
+  { label: '💑 Romantic escape',  query: 'romantic couple escape' },
+  { label: '🎉 Group trip',       query: 'group trip friends' },
+  { label: '🌿 Eco retreat',      query: 'eco retreat nature' },
+  { label: '❄️ Cool & refreshing', query: 'cool mountain waterfall refreshing' },
+  { label: '🏛️ Cultural trip',    query: 'cultural history heritage' },
+  { label: '💰 Budget under 500', query: 'budget under GHS 500' },
+]
 
 export default function VibeHome() {
   const [taglineIdx, setTaglineIdx] = useState(0)
   const [taglineKey, setTaglineKey] = useState(0)
-  const [selectedActivities, setSelectedActivities] = useState([])
-  const [priceMax, setPriceMax] = useState(2000)
-  const [region, setRegion] = useState('')
-  const [type, setType] = useState('')
-  const [showFilters, setShowFilters] = useState(false)
+  const [showFilters, setShowFilters] = useState(true)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const handleSearch = useCallback((q) => {
+    const trimmed = (q || searchQuery).trim()
+    if (!trimmed) return
+    navigate(`/search?q=${encodeURIComponent(trimmed)}`)
+  }, [searchQuery, navigate])
+
+  const selectedActivities = useMemo(() => {
+    const a = searchParams.get('activities')
+    return a ? a.split(',').filter(Boolean) : []
+  }, [searchParams])
+
+  const region   = searchParams.get('region') || ''
+  const type     = searchParams.get('type')   || ''
+  const city     = searchParams.get('city')   || ''
+  const fromCity = searchParams.get('from')   || 'Accra'
+
+  const setParam = useCallback((key, value) => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev)
+      if (!value) next.delete(key)
+      else next.set(key, value)
+      return next
+    }, { replace: true })
+  }, [setSearchParams])
+
+  const setRegion = (v) => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev)
+      if (!v) next.delete('region'); else next.set('region', v)
+      next.delete('city') // reset city when region changes
+      return next
+    }, { replace: true })
+  }
+  const setType     = (v) => setParam('type', v)
+  const setCity     = (v) => setParam('city', v)
+  const setFromCity = (v) => setParam('from', v)
+
+  const upcomingFestivals = useMemo(() => getUpcomingFestivals(3), [])
+
+  const cityOptions = useMemo(() => {
+    const source = region ? properties.filter(p => p.region === region) : properties
+    const counts = {}
+    source.forEach(p => { if (p.city) counts[p.city] = (counts[p.city] || 0) + 1 })
+    return Object.entries(counts)
+      .filter(([, n]) => !region || n >= 1) // show all cities within a region
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .map(([city]) => city)
+  }, [region])
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -31,35 +91,33 @@ export default function VibeHome() {
     return () => clearInterval(id)
   }, [])
 
-  const toggleActivity = (id) =>
-    setSelectedActivities(prev =>
-      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
-    )
+  const toggleActivity = useCallback((id) => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev)
+      const current = (next.get('activities') || '').split(',').filter(Boolean)
+      const updated = current.includes(id) ? current.filter(x => x !== id) : [...current, id]
+      if (updated.length === 0) next.delete('activities')
+      else next.set('activities', updated.join(','))
+      return next
+    }, { replace: true })
+  }, [setSearchParams])
 
   const editorialProps = useMemo(() => properties.filter(p => EDITORIAL_PICKS.includes(p.id)), [])
 
   const filtered = useMemo(() => properties.filter(p => {
     if (selectedActivities.length > 0 && !selectedActivities.some(a => p.activities.includes(a))) return false
-    if (p.priceGHS > priceMax) return false
     if (region && p.region !== region) return false
     if (type && p.type !== type) return false
+    if (city && p.city !== city) return false
     return true
-  }), [selectedActivities, priceMax, region, type])
+  }), [selectedActivities, region, type, city])
 
   return (
     <div className="min-h-screen bg-vibe-red">
       {/* ── HERO ─────────────────────────────────────────── */}
-      <section className="relative pt-28 pb-12 px-4 overflow-hidden">
+      <section className="relative pt-28 pb-10 px-4 overflow-hidden">
         <div className="absolute top-28 left-6 text-white text-4xl opacity-80 animate-float select-none pointer-events-none">✦</div>
         <div className="absolute top-44 right-10 text-white text-2xl opacity-50 animate-float select-none pointer-events-none" style={{ animationDelay: '1.2s' }}>✦</div>
-
-        {/* Blob */}
-        <div className="absolute bottom-0 left-4 w-28 h-28 opacity-90 select-none pointer-events-none">
-          <svg viewBox="0 0 100 100" className="w-full h-full">
-            <ellipse cx="50" cy="58" rx="28" ry="36" fill="#F9A8D4" stroke="#0E1C40" strokeWidth="3"/>
-            <ellipse cx="50" cy="44" rx="18" ry="22" fill="#FBBF24" stroke="#0E1C40" strokeWidth="2.5"/>
-          </svg>
-        </div>
 
         <div className="max-w-3xl mx-auto text-center relative z-10">
           <p key={taglineKey} className="font-cursive text-2xl sm:text-3xl text-vibe-yellow mb-3 animate-tagline">
@@ -68,8 +126,42 @@ export default function VibeHome() {
           <h1 className="font-display text-6xl sm:text-7xl md:text-8xl text-white uppercase leading-none tracking-tight mb-6">
             YOUR NEXT<br />GETAWAY
           </h1>
-          <div className="inline-flex items-center bg-vibe-yellow text-vibe-navy font-body font-extrabold text-base px-6 py-3 rounded-full border-2 border-vibe-navy shadow-btn mb-10">
+          <div className="inline-flex items-center bg-vibe-yellow text-vibe-navy font-body font-extrabold text-base px-6 py-3 rounded-full border-2 border-vibe-navy shadow-btn mb-8">
             Hotels • Eco Lodges • Beach Houses • Airbnb
+          </div>
+
+          {/* AI Search bar */}
+          <div className="relative max-w-xl mx-auto mb-5">
+            <div className="flex items-center bg-white rounded-full border-2 border-vibe-navy shadow-btn overflow-hidden pr-1.5 pl-5 py-1.5 focus-within:border-vibe-yellow transition-colors">
+              <span className="text-xl mr-3 shrink-0">✨</span>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleSearch()}
+                placeholder='Try "beach escape under GHS 1000"...'
+                className="flex-1 font-body text-sm text-vibe-navy bg-transparent outline-none placeholder:text-gray-400 placeholder:italic"
+              />
+              <button
+                onClick={() => handleSearch()}
+                className="shrink-0 bg-vibe-red text-white font-display text-sm px-5 py-2.5 rounded-full border-2 border-vibe-navy hover:bg-vibe-navy transition-colors ml-2 whitespace-nowrap"
+              >
+                ASK AI →
+              </button>
+            </div>
+          </div>
+
+          {/* Quick-pick chips */}
+          <div className="flex gap-2 flex-wrap justify-center pb-2">
+            {QUICK_CHIPS.map(chip => (
+              <button
+                key={chip.label}
+                onClick={() => handleSearch(chip.query)}
+                className="font-body font-bold text-xs text-white bg-white/15 border border-white/40 px-4 py-2 rounded-full hover:bg-white hover:text-vibe-navy transition-colors"
+              >
+                {chip.label}
+              </button>
+            ))}
           </div>
         </div>
       </section>
@@ -99,29 +191,46 @@ export default function VibeHome() {
           </div>
 
           {showFilters && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 p-5 bg-white rounded-2xl border-2 border-vibe-navy shadow-card">
-              <div>
-                <label className="font-body font-extrabold text-xs text-vibe-navy uppercase tracking-wider block mb-2">
-                  Max Price: GHS {priceMax.toLocaleString()}
-                </label>
-                <input type="range" min={180} max={2000} step={50} value={priceMax}
-                  onChange={e => setPriceMax(+e.target.value)} className="w-full accent-vibe-blue" />
+            <div className="mb-6 p-5 bg-white rounded-2xl border-2 border-vibe-navy shadow-card space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label className="font-body font-extrabold text-xs text-vibe-navy uppercase tracking-wider block mb-2">Region</label>
+                  <select value={region} onChange={e => setRegion(e.target.value)}
+                    className="w-full border-2 border-vibe-navy rounded-xl px-3 py-2 font-body text-sm focus:outline-none focus:ring-2 focus:ring-vibe-blue">
+                    <option value="">All regions</option>
+                    {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="font-body font-extrabold text-xs text-vibe-navy uppercase tracking-wider block mb-2">City / District</label>
+                  <select value={city} onChange={e => setCity(e.target.value)}
+                    className="w-full border-2 border-vibe-navy rounded-xl px-3 py-2 font-body text-sm focus:outline-none focus:ring-2 focus:ring-vibe-blue disabled:opacity-40"
+                    disabled={cityOptions.length === 0}>
+                    <option value="">All cities</option>
+                    {cityOptions.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="font-body font-extrabold text-xs text-vibe-navy uppercase tracking-wider block mb-2">Type</label>
+                  <select value={type} onChange={e => setType(e.target.value)}
+                    className="w-full border-2 border-vibe-navy rounded-xl px-3 py-2 font-body text-sm focus:outline-none focus:ring-2 focus:ring-vibe-blue">
+                    <option value="">All types</option>
+                    {TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                </div>
               </div>
-              <div>
-                <label className="font-body font-extrabold text-xs text-vibe-navy uppercase tracking-wider block mb-2">Region</label>
-                <select value={region} onChange={e => setRegion(e.target.value)}
-                  className="w-full border-2 border-vibe-navy rounded-xl px-3 py-2 font-body text-sm focus:outline-none focus:ring-2 focus:ring-vibe-blue">
-                  <option value="">All regions</option>
-                  {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="font-body font-extrabold text-xs text-vibe-navy uppercase tracking-wider block mb-2">Type</label>
-                <select value={type} onChange={e => setType(e.target.value)}
-                  className="w-full border-2 border-vibe-navy rounded-xl px-3 py-2 font-body text-sm focus:outline-none focus:ring-2 focus:ring-vibe-blue">
-                  <option value="">All types</option>
-                  {TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-                </select>
+
+              {/* Driving from */}
+              <div className="border-t border-gray-100 pt-4">
+                <label className="font-body font-extrabold text-xs text-vibe-navy uppercase tracking-wider block mb-2">🚗 Driving from</label>
+                <div className="flex flex-wrap gap-2">
+                  {DEPARTURE_CITIES.map(c => (
+                    <button key={c.id} onClick={() => setFromCity(c.id)}
+                      className={`font-body font-extrabold text-xs px-3 py-1.5 rounded-full border-2 transition-colors ${fromCity === c.id ? 'bg-vibe-navy text-white border-vibe-navy' : 'text-vibe-navy border-vibe-navy/30 hover:border-vibe-navy'}`}>
+                      {c.id}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           )}
@@ -136,14 +245,14 @@ export default function VibeHome() {
               <p className="font-display text-4xl text-white uppercase mb-4">No spots found 😅</p>
               <p className="font-body text-white/70 mb-6">Try removing some filters or pick a different activity.</p>
               <button
-                onClick={() => { setSelectedActivities([]); setRegion(''); setType(''); setPriceMax(2000) }}
+                onClick={() => setSearchParams({}, { replace: true })}
                 className="vibe-btn bg-vibe-yellow text-vibe-navy font-display px-6 py-3 rounded-full border-2 border-vibe-navy">
                 RESET ALL FILTERS
               </button>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filtered.map(p => <PropertyCard key={p.id} property={p} />)}
+              {filtered.slice(0, 32).map(p => <PropertyCard key={p.id} property={p} fromCity={fromCity} />)}
               {/* Explore CTA */}
               <div className="bg-vibe-yellow rounded-xl2 border-2 border-vibe-navy shadow-card p-8 flex flex-col items-center justify-center text-center min-h-[300px] region-card">
                 <p className="font-cursive text-vibe-navy text-xl mb-2">need more options?</p>
@@ -172,80 +281,49 @@ export default function VibeHome() {
                 GETAWAY.GH<br />PICKS THIS WEEK
               </h2>
             </div>
-            <div className="hidden sm:flex items-center gap-2 bg-vibe-yellow text-vibe-navy font-display text-sm px-4 py-2 rounded-full border-2 border-white shrink-0">
-              ✦ EDITOR'S CHOICE
-            </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {editorialProps.map((p, i) => (
-              <div key={p.id} className="relative">
-                {i === 0 && (
-                  <div className="absolute -top-3 -right-3 z-20 w-14 h-14 bg-vibe-yellow border-2 border-vibe-navy rounded-full flex items-center justify-center shadow-btn rotate-12">
-                    <span className="font-display text-vibe-navy text-xs leading-tight text-center">#1<br/>PICK</span>
-                  </div>
-                )}
-                <PropertyCard property={p} />
-              </div>
+            {editorialProps.map(p => (
+              <PropertyCard key={p.id} property={p} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── TRENDING ON SOCIAL ───────────────────────────── */}
-      <section className="px-4 py-12 bg-vibe-red">
+      {/* ── TRENDING ON SOCIAL — hidden ──────────────────── */}
+
+      {/* ── FESTIVAL TEASER ──────────────────────────────── */}
+      <section className="px-4 py-12 bg-vibe-yellow">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-end justify-between mb-6">
             <div>
-              <p className="font-cursive text-vibe-yellow text-xl mb-1">spotted in the wild</p>
-              <h2 className="font-display text-4xl sm:text-5xl text-white uppercase leading-tight">
-                TRENDING<br />ON SOCIAL
+              <p className="font-cursive text-vibe-navy text-xl mb-1">plan around culture</p>
+              <h2 className="font-display text-4xl sm:text-5xl text-vibe-navy uppercase leading-tight">
+                UPCOMING<br />FESTIVALS
               </h2>
             </div>
-            <div className="hidden sm:flex items-center gap-2 shrink-0">
-              <span className="bg-[#EE1D52] text-white font-body font-extrabold text-xs px-3 py-1 rounded-full border-2 border-vibe-navy">TikTok</span>
-              <span className="bg-[#E1306C] text-white font-body font-extrabold text-xs px-3 py-1 rounded-full border-2 border-vibe-navy">Instagram</span>
-            </div>
+            <Link to="/festivals"
+              className="hidden sm:flex font-body font-extrabold text-sm text-vibe-navy bg-white px-4 py-2 rounded-full border-2 border-vibe-navy shadow-btn hover:bg-vibe-red hover:text-white transition-colors shrink-0">
+              Full calendar →
+            </Link>
           </div>
-
-          {socialFeed.posts.length === 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {[1,2,3,4].map(i => (
-                <div key={i} className="bg-white/10 rounded-xl border-2 border-white/20 aspect-[9/16] flex flex-col items-center justify-center gap-2 animate-pulse">
-                  <span className="text-white/30 text-3xl">📱</span>
-                  <p className="font-body text-white/30 text-xs font-bold">Loading posts...</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            {upcomingFestivals.map(f => (
+              <Link key={f.id} to="/festivals"
+                className={`${f.color} rounded-2xl border-2 border-vibe-navy shadow-card p-5 block hover:scale-[1.02] transition-transform`}>
+                <span className="text-3xl block mb-2">{f.emoji}</span>
+                <h3 className="font-display text-lg text-white uppercase leading-tight mb-1">{f.name}</h3>
+                <p className="font-cursive text-white/80 text-sm mb-2">{f.tagline}</p>
+                <div className="flex flex-wrap gap-2">
+                  <span className="font-body font-extrabold text-[10px] bg-white/20 text-white px-2.5 py-1 rounded-full">📅 {f.displayDate}</span>
+                  <span className="font-body font-extrabold text-[10px] bg-white/20 text-white px-2.5 py-1 rounded-full">📍 {f.location}</span>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              {socialFeed.posts.slice(0, 8).map(post => (
-                <a key={post.id} href={post.url} target="_blank" rel="noopener noreferrer"
-                  className="group relative bg-vibe-navy rounded-xl border-2 border-vibe-navy overflow-hidden shadow-card block aspect-[9/16]">
-                  {post.thumbnail && (
-                    <img src={post.thumbnail} alt={post.caption || 'Social post'}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  <div className="absolute top-2 left-2">
-                    {post.platform === 'tiktok' ? (
-                      <span className="bg-[#EE1D52] text-white font-body font-extrabold text-[10px] px-2 py-0.5 rounded-full">TikTok</span>
-                    ) : (
-                      <span className="bg-[#E1306C] text-white font-body font-extrabold text-[10px] px-2 py-0.5 rounded-full">IG</span>
-                    )}
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 p-3">
-                    <p className="font-body font-extrabold text-white text-xs mb-0.5">@{post.creator}</p>
-                    {post.caption && (
-                      <p className="font-body text-white/70 text-[10px] leading-snug line-clamp-2">{post.caption}</p>
-                    )}
-                    {post.likes > 0 && (
-                      <p className="font-body font-bold text-vibe-yellow text-[10px] mt-1">❤️ {post.likes.toLocaleString()}</p>
-                    )}
-                  </div>
-                </a>
-              ))}
-            </div>
-          )}
+              </Link>
+            ))}
+          </div>
+          <div className="mt-5 sm:hidden text-center">
+            <Link to="/festivals" className="font-body font-extrabold text-sm text-vibe-navy underline">See full festival calendar →</Link>
+          </div>
         </div>
       </section>
 
@@ -273,7 +351,7 @@ export default function VibeHome() {
             ADD TO THE<br />SCRAPBOOK
           </h2>
           <p className="font-body font-bold text-white/90 text-base mb-8 max-w-sm leading-relaxed">
-            Found a hidden gem in Ghana? Save it to your trip board and share it with friends planning their next getaway.
+            Found a hidden gem in Ghana? Save your spots and share them with friends planning their next getaway.
           </p>
           <Link to="/board" className="vibe-btn inline-flex items-center gap-2 bg-vibe-yellow text-vibe-navy font-display text-base px-8 py-4 rounded-full border-2 border-vibe-navy">
             UPLOAD PHOTOS 📸
