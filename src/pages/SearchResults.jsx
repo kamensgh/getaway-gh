@@ -369,7 +369,7 @@ export default function SearchResults() {
 
           {/* Inline search bar */}
           <form onSubmit={handleInlineSearch} className="mb-5">
-            <div className="flex items-center bg-white rounded-full border-2 border-vibe-navy shadow-btn overflow-hidden pr-1.5 pl-5 py-1.5 focus-within:border-vibe-yellow transition-colors max-w-lg">
+            <div className="flex items-center bg-white rounded-full border-2 border-vibe-navy shadow-btn overflow-hidden pr-1.5 pl-5 py-1.5 focus-within:border-vibe-yellow transition-colors">
               <span className="text-lg mr-3 shrink-0">✨</span>
               <input
                 type="text"
@@ -382,7 +382,7 @@ export default function SearchResults() {
                 type="submit"
                 className="shrink-0 bg-vibe-red text-white font-display text-sm px-5 py-2.5 rounded-full border-2 border-vibe-navy hover:bg-vibe-navy transition-colors ml-2 whitespace-nowrap"
               >
-                ASK AI →
+                ASK AI
               </button>
             </div>
           </form>
@@ -400,6 +400,15 @@ export default function SearchResults() {
               <span className="text-vibe-navy font-extrabold">{filteredResults.length}</span> spot{filteredResults.length !== 1 ? 's' : ''}
               {baseResults.length !== filteredResults.length && ` of ${baseResults.length}`}
             </p>
+
+            {activeFilterCount > 0 && (
+              <button
+                onClick={() => setFilters({ regions: defaultRegions, types: defaultTypes, activities: [], priceRange: [0, maxPriceInResults], fromCity: 'Accra' })}
+                className="font-body font-bold text-xs text-vibe-red border-2 border-vibe-red px-3 py-1.5 rounded-full hover:bg-vibe-red hover:text-white transition-colors"
+              >
+                ✕ Clear filters
+              </button>
+            )}
 
             <div className="ml-auto flex items-center gap-2">
               <label className="font-body text-xs text-gray-500 font-semibold hidden sm:block">Sort:</label>
