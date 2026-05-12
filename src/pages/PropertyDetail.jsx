@@ -478,18 +478,40 @@ export default function PropertyDetail() {
 
                 {/* Festivals */}
                 {getFestivals(p.id).length > 0 && (
-                  <div className="bg-vibe-yellow rounded-xl border-2 border-vibe-navy shadow-card p-5">
-                    <p className="font-display text-xs text-vibe-navy uppercase tracking-wider mb-4">🎉 What's on nearby</p>
-                    <div className="space-y-4">
+                  <div className="bg-vibe-yellow rounded-xl border-2 border-vibe-navy shadow-card overflow-hidden">
+                    <div className="px-5 pt-5 pb-3 flex items-center gap-2">
+                      <span className="text-lg">🎉</span>
+                      <p className="font-display text-xs text-vibe-navy uppercase tracking-wider">What's on nearby</p>
+                    </div>
+                    <div className="space-y-3 px-3 pb-5">
                       {getFestivals(p.id).map((f, i) => (
-                        <div key={i} className="flex gap-3">
-                          <span className="text-2xl shrink-0 mt-0.5">{f.emoji}</span>
-                          <div>
-                            <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                              <p className="font-display text-sm text-vibe-navy uppercase leading-tight">{f.name}</p>
-                              <span className="font-body text-[10px] font-extrabold bg-vibe-navy text-white px-2 py-0.5 rounded-full">{f.month}</span>
+                        <div key={i} className="bg-white rounded-xl border-2 border-vibe-navy overflow-hidden">
+                          {/* Image — only if provided */}
+                          {f.image && (
+                            <div className="h-40 overflow-hidden">
+                              <img
+                                src={f.image}
+                                alt={f.name}
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                              />
                             </div>
-                            <p className="font-body text-xs text-vibe-navy/80 leading-relaxed">{f.description}</p>
+                          )}
+                          <div className="p-4">
+                            {/* Title + month */}
+                            <div className="flex items-start gap-2 flex-wrap mb-2">
+                              <span className="text-xl shrink-0">{f.emoji}</span>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <p className="font-display text-sm text-vibe-navy uppercase leading-tight">{f.name}</p>
+                                  <span className="font-body text-[10px] font-extrabold bg-vibe-navy text-white px-2.5 py-1 rounded-full shrink-0">{f.month}</span>
+                                </div>
+                              </div>
+                            </div>
+                            {/* Body paragraph — long if available, short description as fallback */}
+                            <p className="font-body text-sm text-gray-600 leading-relaxed">
+                              {f.body || f.description}
+                            </p>
                           </div>
                         </div>
                       ))}
