@@ -123,6 +123,14 @@ export default function VibeHome() {
   }, [typedText, isDeleting, phraseIdx, searchQuery])
 
   const activitySectionRef = useRef(null)
+  const cityBtnRefs = useRef({})
+
+  // Scroll selected city pill into view on mobile when fromCity changes
+  useEffect(() => {
+    if (window.innerWidth >= 1024) return
+    const el = cityBtnRefs.current[fromCity]
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+  }, [fromCity])
 
   const toggleActivity = useCallback((id) => {
     // Desktop only: scroll so the activity section sits just under the navbar
@@ -255,7 +263,26 @@ export default function VibeHome() {
               {/* Driving from */}
               <div className="border-t border-gray-100 pt-4">
                 <label className="font-body font-extrabold text-xs text-vibe-navy uppercase tracking-wider block mb-2">🚗 Driving from</label>
-                <div className="flex flex-wrap gap-2">
+                {/* Mobile: single-row horizontal scroll */}
+                <div
+                  className="lg:hidden overflow-x-auto pb-1"
+                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
+                >
+                  <div className="flex gap-2" style={{ width: 'max-content' }}>
+                    {DEPARTURE_CITIES.map(c => (
+                      <button
+                        key={c.id}
+                        ref={el => { cityBtnRefs.current[c.id] = el }}
+                        onClick={() => setFromCity(c.id)}
+                        className={`font-body font-extrabold text-xs px-3 py-1.5 rounded-full border-2 whitespace-nowrap transition-colors ${fromCity === c.id ? 'bg-vibe-navy text-white border-vibe-navy' : 'text-vibe-navy border-vibe-navy/30 hover:border-vibe-navy'}`}
+                      >
+                        {c.id}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {/* Desktop: wrapping flex (unchanged) */}
+                <div className="hidden lg:flex flex-wrap gap-2">
                   {DEPARTURE_CITIES.map(c => (
                     <button key={c.id} onClick={() => setFromCity(c.id)}
                       className={`font-body font-extrabold text-xs px-3 py-1.5 rounded-full border-2 transition-colors ${fromCity === c.id ? 'bg-vibe-navy text-white border-vibe-navy' : 'text-vibe-navy border-vibe-navy/30 hover:border-vibe-navy'}`}>
