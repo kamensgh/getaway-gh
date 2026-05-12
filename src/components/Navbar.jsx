@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTripBoard } from '../context/TripBoardContext'
 import { useAuth } from '../context/AuthContext'
 
@@ -19,11 +19,28 @@ export default function Navbar() {
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
 
-  const links = [
-    { to: '/',        label: 'Explore' },
-    { to: '/board',   label: 'My Trips' },
-    { to: '/explore', label: 'Regions' },
+  const [searchParams] = useSearchParams()
+  const isSearchPage   = location.pathname === '/search'
+  const [navQuery, setNavQuery] = useState(searchParams.get('q') || '')
+
+  useEffect(() => {
+    setNavQuery(searchParams.get('q') || '')
+  }, [searchParams])
+
+  function handleNavSearch(e) {
+    e.preventDefault()
+    const q = navQuery.trim()
+    if (!q) return
+    navigate(`/search?q=${encodeURIComponent(q)}`)
+  }
+
+  const baseLinks = [
+    { to: '/explore',   label: 'Explore' },
+    { to: '/festivals', label: 'Festivals' },
   ]
+  const links = user
+    ? [...baseLinks, { to: '/profile', label: 'My Spots', count: saved.length }]
+    : baseLinks
 
   function handleSignIn() {
     signInWithGoogle() // triggers redirect — page navigates away
@@ -36,13 +53,30 @@ export default function Navbar() {
           Getaway<span className="text-vibe-blue">.</span><span className="text-vibe-red">gh</span>
         </Link>
 
+          {/* Compact search — only on /search page */}
+          {isSearchPage && (
+            <form onSubmit={handleNavSearch} className="hidden sm:flex flex-1 max-w-xs mx-4">
+              <div className="flex items-center w-full bg-white rounded-full border-2 border-vibe-navy px-3 py-1 gap-2">
+                <span className="text-sm">✨</span>
+                <input
+                  type="text"
+                  value={navQuery}
+                  onChange={e => setNavQuery(e.target.value)}
+                  placeholder="Search again..."
+                  className="flex-1 font-body text-xs text-vibe-navy bg-transparent outline-none placeholder:text-gray-400"
+                />
+                <button type="submit" className="font-display text-xs text-vibe-red font-black hover:text-vibe-navy transition-colors">GO</button>
+              </div>
+            </form>
+          )}
+
         <div className="hidden sm:flex items-center gap-5 flex-1">
           {links.map(l => (
             <Link key={l.to} to={l.to}
               className={`font-body text-sm font-bold transition-colors ${location.pathname === l.to ? 'text-vibe-navy' : 'text-gray-500 hover:text-vibe-navy'}`}>
               {l.label}
-              {l.to === '/board' && saved.length > 0 && (
-                <span className="ml-1 bg-vibe-red text-white text-xs rounded-full px-1.5 py-0.5 font-black">{saved.length}</span>
+              {l.count > 0 && (
+                <span className="ml-1 bg-vibe-red text-white text-xs rounded-full px-1.5 py-0.5 font-black">{l.count}</span>
               )}
             </Link>
           ))}
@@ -89,21 +123,12 @@ export default function Navbar() {
             <Link key={l.to} to={l.to} onClick={() => setMenuOpen(false)}
               className="flex items-center justify-between px-5 py-4 font-body font-bold text-vibe-navy border-b border-gray-100 hover:bg-yellow-50 transition-colors">
               {l.label}
-              {l.to === '/board' && saved.length > 0 && (
-                <span className="bg-vibe-red text-white text-xs rounded-full px-2 py-0.5 font-black">{saved.length}</span>
+              {l.count > 0 && (
+                <span className="bg-vibe-red text-white text-xs rounded-full px-2 py-0.5 font-black">{l.count}</span>
               )}
             </Link>
           ))}
-          {user ? (
-            <Link to="/profile" onClick={() => setMenuOpen(false)}
-              className="flex items-center gap-3 px-5 py-4 font-body font-bold text-vibe-navy border-t border-gray-100 hover:bg-yellow-50 transition-colors">
-              {user.photoURL
-                ? <img src={user.photoURL} alt="" className="w-6 h-6 rounded-full border border-vibe-navy" referrerPolicy="no-referrer" />
-                : <span className="w-6 h-6 rounded-full bg-vibe-yellow border border-vibe-navy flex items-center justify-center text-xs font-black">{user.displayName?.[0]}</span>
-              }
-              My Profile
-            </Link>
-          ) : (
+          {!user && (
             <button onClick={() => { setMenuOpen(false); handleSignIn() }}
               className="w-full flex items-center gap-2 px-5 py-4 font-body font-bold text-vibe-navy hover:bg-yellow-50 transition-colors">
               <GoogleIcon />
