@@ -15,6 +15,16 @@ const TAGLINES = [
   "The weekend is calling. Who's answering?",
 ]
 
+const SEARCH_PLACEHOLDERS = [
+  'Try "beach escape under GHS 1000"...',
+  'Find me something near Kumasi for the family...',
+  'Romantic getaway, 2 nights, not too far...',
+  'Safari weekend near Mole National Park...',
+  'Eco retreat in the Volta region...',
+  'Group trip for 8 friends, budget-friendly...',
+  'Cool mountain escape with a waterfall...',
+]
+
 const QUICK_CHIPS = [
   { label: '🌊 Beach weekend',    query: 'beach weekend' },
   { label: '🦁 Safari & wildlife', query: 'safari wildlife mole' },
@@ -33,6 +43,8 @@ export default function VibeHome() {
   const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
+  const [placeholderIdx,  setPlaceholderIdx]  = useState(0)
+  const [placeholderShow, setPlaceholderShow] = useState(true)
 
   const handleSearch = useCallback((q) => {
     const trimmed = (q || searchQuery).trim()
@@ -91,6 +103,17 @@ export default function VibeHome() {
     return () => clearInterval(id)
   }, [])
 
+  useEffect(() => {
+    const id = setInterval(() => {
+      setPlaceholderShow(false)
+      setTimeout(() => {
+        setPlaceholderIdx(i => (i + 1) % SEARCH_PLACEHOLDERS.length)
+        setPlaceholderShow(true)
+      }, 350)
+    }, 3000)
+    return () => clearInterval(id)
+  }, [])
+
   const toggleActivity = useCallback((id) => {
     setSearchParams(prev => {
       const next = new URLSearchParams(prev)
@@ -134,14 +157,23 @@ export default function VibeHome() {
           <div className="relative max-w-xl mx-auto mb-5">
             <div className="flex items-center bg-white rounded-full border-2 border-vibe-navy shadow-btn overflow-hidden pr-1.5 pl-5 py-1.5 focus-within:border-vibe-yellow transition-colors">
               <span className="text-xl mr-3 shrink-0">✨</span>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleSearch()}
-                placeholder='Try "beach escape under GHS 1000"...'
-                className="flex-1 font-body text-sm text-vibe-navy bg-transparent outline-none placeholder:text-gray-400 placeholder:italic"
-              />
+              <div className="relative flex-1 flex items-center h-8">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleSearch()}
+                  className="w-full font-body text-sm text-vibe-navy bg-transparent outline-none"
+                />
+                {!searchQuery && (
+                  <span
+                    className="absolute inset-0 flex items-center pointer-events-none font-body text-sm italic text-gray-400 transition-opacity duration-300 whitespace-nowrap overflow-hidden"
+                    style={{ opacity: placeholderShow ? 1 : 0 }}
+                  >
+                    {SEARCH_PLACEHOLDERS[placeholderIdx]}
+                  </span>
+                )}
+              </div>
               <button
                 onClick={() => handleSearch()}
                 className="shrink-0 bg-vibe-red text-white font-display text-sm px-5 py-2.5 rounded-full border-2 border-vibe-navy hover:bg-vibe-navy transition-colors ml-2 whitespace-nowrap"
