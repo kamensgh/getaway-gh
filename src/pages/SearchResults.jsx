@@ -408,11 +408,6 @@ export default function SearchResults() {
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
               {filteredResults.map((p, idx) => (
                 <div key={p.id} className="relative">
-                  {idx < 3 && (
-                    <div className="absolute top-3 left-12 z-20 bg-vibe-yellow text-vibe-navy font-display text-xs px-2.5 py-0.5 rounded-full border border-vibe-navy shadow-sm">
-                      {idx === 0 ? '🏅 #1 AI Pick' : idx === 1 ? '🥈 #2' : '🥉 #3'}
-                    </div>
-                  )}
                   <PropertyCard property={p} fromCity={filters.fromCity} />
                 </div>
               ))}
