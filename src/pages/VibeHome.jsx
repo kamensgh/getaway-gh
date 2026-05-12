@@ -188,18 +188,6 @@ export default function VibeHome() {
             Hotels • Eco Lodges • Beach Houses • Airbnb
           </div>
 
-          {/* Quick-pick chips */}
-          <div className="flex gap-2 flex-wrap justify-center pb-2">
-            {QUICK_CHIPS.map(chip => (
-              <button
-                key={chip.label}
-                onClick={() => handleSearch(chip.query)}
-                className="font-body font-bold text-xs text-white bg-white/15 border border-white/40 px-4 py-2 rounded-full hover:bg-white hover:text-vibe-navy transition-colors"
-              >
-                {chip.label}
-              </button>
-            ))}
-          </div>
         </div>
       </section>
 
