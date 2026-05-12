@@ -328,7 +328,7 @@ export default function VibeHome() {
 
               {/* Driving from */}
               <div className="border-t border-gray-100 pt-4">
-                <label className="font-body font-extrabold text-xs text-vibe-navy uppercase tracking-wider block mb-2">🚗 Driving from</label>
+                <label className="font-body font-extrabold text-xs text-vibe-navy uppercase tracking-wider block mb-2">🚗 Getting there from</label>
                 {/* Mobile: single-row horizontal scroll */}
                 <div
                   className="lg:hidden overflow-x-auto pb-1"

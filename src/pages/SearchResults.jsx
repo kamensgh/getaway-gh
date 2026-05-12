@@ -169,7 +169,7 @@ function SearchSidebar({ baseResults, defaultRegions, defaultTypes, filters, set
         {/* Drive from */}
         <details open>
           <summary className="font-body font-extrabold text-xs text-vibe-navy uppercase tracking-wider cursor-pointer mb-3 list-none flex justify-between">
-            🚗 Drive from <span className="text-gray-400 font-normal">▾</span>
+            🚗 Getting there from <span className="text-gray-400 font-normal">▾</span>
           </summary>
           <div className="space-y-2">
             {DEPARTURE_CITIES.map(c => (
