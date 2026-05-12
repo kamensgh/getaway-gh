@@ -298,6 +298,16 @@ export default function PropertyDetail() {
                   </div>
                 </div>
 
+                {/* City pills */}
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  {DEPARTURE_CITIES.map(c => (
+                    <button key={c.id} onClick={() => setFromCity(c.id)}
+                      className={`font-body font-extrabold text-[11px] px-2.5 py-1 rounded-full border-2 transition-colors ${fromCity === c.id ? 'bg-vibe-navy text-white border-vibe-navy' : 'text-vibe-navy border-vibe-navy/30 hover:border-vibe-navy'}`}>
+                      {c.id}
+                    </button>
+                  ))}
+                </div>
+
                 {driveTime && (
                   <p className="font-display text-lg text-vibe-navy mb-2">{driveTime} from {fromCity}</p>
                 )}
