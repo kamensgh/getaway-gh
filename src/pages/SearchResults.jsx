@@ -194,16 +194,19 @@ function SearchSidebar({ baseResults, defaultRegions, defaultTypes, filters, set
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 
+const PAGE_SIZE = 14
+
 export default function SearchResults() {
   const [searchParams] = useSearchParams()
   const navigate       = useNavigate()
   const query          = searchParams.get('q') || ''
 
-  const [loading,     setLoading]     = useState(true)
-  const [loaderStep,  setLoaderStep]  = useState(0)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [sortBy,      setSortBy]      = useState('match')
-  const [inlineQuery, setInlineQuery] = useState(query)
+  const [loading,      setLoading]      = useState(true)
+  const [loaderStep,   setLoaderStep]   = useState(0)
+  const [sidebarOpen,  setSidebarOpen]  = useState(false)
+  const [sortBy,       setSortBy]       = useState('match')
+  const [inlineQuery,  setInlineQuery]  = useState(query)
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const [filters, setFilters] = useState({
     regions:    [],
     types:      [],
@@ -212,8 +215,9 @@ export default function SearchResults() {
     fromCity:   'Accra',
   })
 
+  // When there's no query, show all properties; otherwise run AI search
   const { results: baseResults, summary } = useMemo(
-    () => searchProperties(query, properties),
+    () => query ? searchProperties(query, properties) : { results: [...properties], summary: '' },
     [query]
   )
 
@@ -243,8 +247,11 @@ export default function SearchResults() {
     filters.activities.length +
     (filters.priceRange[1] < maxPriceInResults ? 1 : 0)
 
-  // Sync inline search input when query param changes
-  useEffect(() => { setInlineQuery(query) }, [query])
+  // Sync inline search input + reset visible count when query param changes
+  useEffect(() => {
+    setInlineQuery(query)
+    setVisibleCount(PAGE_SIZE)
+  }, [query])
 
   // Pre-select regions + types found in results so users can uncheck to narrow
   useEffect(() => {
@@ -263,6 +270,13 @@ export default function SearchResults() {
     const t3 = setTimeout(() => setLoading(false), 1800)
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
   }, [query])
+
+  function clearAll() {
+    setInlineQuery('')
+    setVisibleCount(PAGE_SIZE)
+    setFilters({ regions: [], types: [], activities: [], priceRange: [0, 5000], fromCity: 'Accra' })
+    navigate('/search')
+  }
 
   useEffect(() => {
     function handleResize() { if (window.innerWidth >= 1024) setSidebarOpen(false) }
@@ -314,26 +328,28 @@ export default function SearchResults() {
   return (
     <div className="min-h-screen bg-gray-50">
 
-      {/* AI Answer Banner — sticky */}
-      <div className="bg-vibe-navy pt-24 pb-5 px-4 sticky top-0 z-40 border-b-2 border-vibe-navy/50 shadow-sm">
-        <div className="max-w-6xl mx-auto relative text-center">
-          <p className="font-body font-extrabold text-vibe-yellow text-xs uppercase tracking-widest mb-1">✨ Getaway AI</p>
-          <p className="font-body text-white text-sm leading-snug max-w-2xl mx-auto">
-            {summary || `Showing results for "${query}"`}
-          </p>
-          <button
-            onClick={() => navigate('/')}
-            className="absolute right-0 top-0 font-body font-bold text-xs text-white/50 hover:text-white transition-colors"
-          >
-            New search ✕
-          </button>
+      {/* AI Answer Banner — sticky, only shown when there's an active query */}
+      {query && (
+        <div className="bg-vibe-navy pt-24 pb-5 px-4 sticky top-0 z-40 border-b-2 border-vibe-navy/50 shadow-sm">
+          <div className="max-w-6xl mx-auto relative text-center">
+            <p className="font-body font-extrabold text-vibe-yellow text-xs uppercase tracking-widest mb-1">✨ Getaway AI</p>
+            <p className="font-body text-white text-sm leading-snug max-w-2xl mx-auto">
+              {summary || `Showing results for "${query}"`}
+            </p>
+            <button
+              onClick={clearAll}
+              className="absolute right-0 top-0 font-body font-bold text-xs text-white/60 border border-white/30 px-3 py-1 rounded-full hover:bg-white/10 transition-colors"
+            >
+              ✕ Clear
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="max-w-6xl mx-auto flex min-h-[calc(100vh-120px)]">
 
         {/* Desktop Sidebar */}
-        <aside className="hidden lg:flex flex-col w-60 min-w-[240px] border-r-2 border-gray-200 bg-white shrink-0 sticky top-[88px] h-[calc(100vh-88px)] overflow-hidden">
+        <aside className="hidden lg:flex flex-col w-60 min-w-[240px] border-r-2 border-gray-200 bg-white shrink-0 sticky top-[72px] h-[calc(100vh-72px)] overflow-hidden">
           <SearchSidebar
             baseResults={baseResults}
             defaultRegions={defaultRegions}
@@ -401,12 +417,12 @@ export default function SearchResults() {
               {baseResults.length !== filteredResults.length && ` of ${baseResults.length}`}
             </p>
 
-            {activeFilterCount > 0 && (
+            {(activeFilterCount > 0 || query) && (
               <button
-                onClick={() => setFilters({ regions: defaultRegions, types: defaultTypes, activities: [], priceRange: [0, maxPriceInResults], fromCity: 'Accra' })}
+                onClick={clearAll}
                 className="font-body font-bold text-xs text-vibe-red border-2 border-vibe-red px-3 py-1.5 rounded-full hover:bg-vibe-red hover:text-white transition-colors"
               >
-                ✕ Clear filters
+                ✕ Clear
               </button>
             )}
 
@@ -428,19 +444,31 @@ export default function SearchResults() {
               <p className="font-display text-4xl text-vibe-navy uppercase mb-4">No spots found 😅</p>
               <p className="font-body text-gray-500 mb-6">Try removing a filter or start a new search.</p>
               <button
-                onClick={() => setFilters({ regions: defaultRegions, types: defaultTypes, activities: [], priceRange: [0, maxPriceInResults], fromCity: 'Accra' })}
+                onClick={clearAll}
                 className="font-body font-extrabold text-sm bg-vibe-navy text-white px-6 py-3 rounded-full border-2 border-vibe-navy hover:bg-vibe-red transition-colors"
               >
-                Clear all filters
+                ✕ Clear &amp; reset
               </button>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredResults.map((p, idx) => (
+              {filteredResults.slice(0, visibleCount).map(p => (
                 <div key={p.id} className="relative">
                   <PropertyCard property={p} fromCity={filters.fromCity} />
                 </div>
               ))}
+
+              {/* Load more card */}
+              {filteredResults.length > visibleCount && (
+                <button
+                  onClick={() => setVisibleCount(c => c + PAGE_SIZE)}
+                  className="flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-vibe-navy bg-white hover:bg-vibe-yellow transition-colors min-h-[260px] p-6 group"
+                >
+                  <span className="text-4xl group-hover:scale-110 transition-transform">✦</span>
+                  <span className="font-display text-vibe-navy text-lg uppercase">Load more</span>
+                  <span className="font-body text-sm text-gray-400">{filteredResults.length - visibleCount} more spot{filteredResults.length - visibleCount !== 1 ? 's' : ''}</span>
+                </button>
+              )}
             </div>
           )}
         </div>
