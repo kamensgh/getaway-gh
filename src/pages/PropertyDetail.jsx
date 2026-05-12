@@ -359,17 +359,17 @@ export default function PropertyDetail() {
             )}
 
             {/* ── TAB BAR ──────────────────────────────────────── */}
-            <div className="flex gap-1.5 overflow-x-auto pb-1 mb-6 -mx-1 px-1 scrollbar-hide">
+            <div className="flex overflow-x-auto scrollbar-hide border-b-2 border-white/20 mb-6">
               {tabs.map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full border-2 border-vibe-navy font-display text-xs uppercase tracking-wide transition-colors whitespace-nowrap
+                  className={`shrink-0 px-5 py-3 font-display text-xs uppercase tracking-widest whitespace-nowrap border-b-2 -mb-0.5 transition-all duration-150
                     ${activeTab === tab.id
-                      ? 'bg-vibe-navy text-white'
-                      : 'bg-white text-vibe-navy hover:bg-vibe-yellow'}`}
+                      ? 'border-vibe-yellow text-white'
+                      : 'border-transparent text-white/45 hover:text-white/80 hover:border-white/30'}`}
                 >
-                  <span>{tab.emoji}</span> {tab.label}
+                  {tab.label}
                 </button>
               ))}
             </div>
