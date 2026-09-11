@@ -7,6 +7,7 @@ import { useTripBoard } from '../context/TripBoardContext'
 import PropertyCard from '../components/PropertyCard'
 import NearbyAmenities from '../components/NearbyAmenities'
 import { estimateDriveTime, DEPARTURE_CITIES } from '../utils/driveTime'
+import { onImgError } from '../utils/images'
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
@@ -257,14 +258,14 @@ export default function PropertyDetail() {
               className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-3xl transition-colors z-10">›</button>
           </>}
 
-          <img src={imgs[imgIdx]} alt="" className="max-h-[80vh] max-w-[88vw] object-contain rounded-xl" onClick={e => e.stopPropagation()} />
+          <img src={imgs[imgIdx]} alt="" className="max-h-[80vh] max-w-[88vw] object-contain rounded-xl" onClick={e => e.stopPropagation()} onError={onImgError} />
 
           {imgs.length > 1 && (
             <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2 overflow-x-auto max-w-[90vw] px-2" onClick={e => e.stopPropagation()}>
               {imgs.map((img, i) => (
                 <button key={i} onClick={() => setImgIdx(i)}
                   className={`shrink-0 w-16 h-11 rounded-lg overflow-hidden border-2 transition-all ${i === imgIdx ? 'border-white opacity-100' : 'border-white/20 opacity-50 hover:opacity-80'}`}>
-                  <img src={img} className="w-full h-full object-cover" />
+                  <img src={img} className="w-full h-full object-cover" onError={onImgError} />
                 </button>
               ))}
             </div>
@@ -290,7 +291,7 @@ export default function PropertyDetail() {
 
         {/* Mobile: swipeable slider */}
         <div className="sm:hidden relative rounded-2xl overflow-hidden border-2 border-vibe-navy shadow-card h-72">
-          <img src={imgs[imgIdx]} alt={p.name} className="w-full h-full object-cover cursor-pointer" onClick={() => openGallery(imgIdx)} />
+          <img src={imgs[imgIdx]} alt={p.name} className="w-full h-full object-cover cursor-pointer" onClick={() => openGallery(imgIdx)} onError={onImgError} />
           {imgs.length > 1 && <>
             <button onClick={() => setImgIdx(i => (i - 1 + imgs.length) % imgs.length)}
               className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white border-2 border-vibe-navy rounded-full flex items-center justify-center font-bold text-vibe-navy hover:bg-vibe-yellow transition-colors">‹</button>
@@ -309,14 +310,14 @@ export default function PropertyDetail() {
           <div className="grid grid-cols-4 grid-rows-2 gap-0.5 h-[440px] bg-vibe-navy">
             {/* Main image — left half */}
             <button className="col-span-2 row-span-2 relative overflow-hidden group" onClick={() => openGallery(0)}>
-              <img src={imgs[0]} alt={p.name} className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500" />
+              <img src={imgs[0]} alt={p.name} className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500" onError={onImgError} />
             </button>
             {/* 4 thumbnail slots */}
             {[1, 2, 3, 4].map(i => (
               <button key={i} onClick={() => openGallery(i < imgs.length ? i : 0)}
                 className="relative overflow-hidden group">
                 {i < imgs.length
-                  ? <img src={imgs[i]} alt="" className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-300" />
+                  ? <img src={imgs[i]} alt="" className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-300" onError={onImgError} />
                   : <div className="w-full h-full bg-gray-900/40" />
                 }
               </button>
@@ -494,6 +495,7 @@ export default function PropertyDetail() {
                                 alt={f.name}
                                 className="w-full h-full object-cover"
                                 loading="lazy"
+                                onError={onImgError}
                               />
                             </div>
                           )}

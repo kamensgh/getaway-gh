@@ -48,6 +48,7 @@ const USD = (ghs) => Math.round(ghs / 12)
 export const EDITORIAL_PICKS = [1, 5, 10, 15, 18]
 
 import { googleImages } from './google-images.js'
+import { usableImages, PLACEHOLDER_IMG } from '../utils/images.js'
 import { googleProperties } from './google-properties.js'
 
 const _coreProperties = [
@@ -6507,21 +6508,30 @@ const _coreProperties = [
 
 ]
 
-// Merge core properties (with Google photo overrides) + Google-discovered properties
+// Merge core properties (with Google photo overrides) + Google-discovered properties.
+// Expired Google Place Photo URLs are dropped, so a property falls back to its own
+// curated photos and, failing that, to the placeholder.
 export const properties = [
   ..._coreProperties.map(p => {
-    const gImgs = googleImages[p.id]
+    const gImgs = usableImages(googleImages[p.id])
+    const own   = usableImages([p.image, ...(p.images || [])])
+    const imgs  = gImgs.length ? gImgs : own
     return {
       ...p,
-      image:  gImgs?.length ? gImgs[0]  : p.image,
-      images: gImgs?.length ? gImgs     : p.images,
+      image:  imgs[0] || PLACEHOLDER_IMG,
+      images: imgs.length ? imgs : [PLACEHOLDER_IMG],
     }
   }),
-  ...googleProperties.map(p => ({
-    ...p,
-    tags: p.tags?.length ? p.tags : _inferTags(p.type, p.city),
-    priceGHS: p.priceGHS === 750 ? null : p.priceGHS,
-  })),
+  ...googleProperties.map(p => {
+    const imgs = usableImages([p.image, ...(p.images || [])])
+    return {
+      ...p,
+      image:  imgs[0] || PLACEHOLDER_IMG,
+      images: imgs.length ? imgs : [PLACEHOLDER_IMG],
+      tags: p.tags?.length ? p.tags : _inferTags(p.type, p.city),
+      priceGHS: p.priceGHS === 750 ? null : p.priceGHS,
+    }
+  }),
 ]
 
 function _inferTags(type, city) {

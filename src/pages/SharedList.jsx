@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { doc, getDoc } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { properties, getTagClass } from '../data/properties'
+import { onImgError } from '../utils/images'
 
 export default function SharedList() {
   const { uid } = useParams()
@@ -91,7 +92,7 @@ export default function SharedList() {
                   style={{ transform: `rotate(${p.rotate})` }}>
                   <div className="relative h-48 overflow-hidden rounded-t-xl border-b-2 border-vibe-navy">
                     <Link to={`/property/${p.id}`}>
-                      <img src={p.image} alt={p.name} className="card-img w-full h-full object-cover" />
+                      <img src={p.image} alt={p.name} className="card-img w-full h-full object-cover" onError={onImgError} />
                     </Link>
                     <span className={`absolute top-3 right-3 ${p.priceTag} font-display text-xs px-2.5 py-1 rounded-full border border-vibe-navy`}>
                       GHS {p.priceGHS.toLocaleString()}

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { properties, getTagClass } from '../data/properties'
 import { useTripBoard } from '../context/TripBoardContext'
+import { onImgError } from '../utils/images'
 
 const REACTIONS = ['👍', '🔥', '👎']
 
@@ -74,7 +75,7 @@ export default function TripBoard() {
                 {/* Photo */}
                 <div className="relative h-48 overflow-hidden rounded-t-xl border-b-2 border-vibe-navy">
                   <Link to={`/property/${property.id}`}>
-                    <img src={property.image} alt={property.name} className="card-img w-full h-full object-cover" />
+                    <img src={property.image} alt={property.name} className="card-img w-full h-full object-cover" onError={onImgError} />
                   </Link>
                   {property.type === 'Airbnb' && (
                     <span className={`absolute top-3 right-3 ${property.priceTag} font-display text-xs px-2.5 py-1 rounded-full border border-vibe-navy`}>

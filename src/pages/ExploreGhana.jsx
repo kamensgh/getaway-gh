@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { properties, getTagClass, TYPES } from '../data/properties'
+import { onImgError } from '../utils/images'
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
@@ -420,7 +421,7 @@ export default function ExploreGhana() {
                       style={p.rotate ? { transform: `rotate(${p.rotate})` } : undefined}>
                       <Link to={`/property/${p.id}`}>
                         <div className="relative h-44 overflow-hidden border-b-2 border-vibe-navy">
-                          <img src={img} alt={p.name} className="card-img w-full h-full object-cover" />
+                          <img src={img} alt={p.name} className="card-img w-full h-full object-cover" onError={onImgError} />
                           {p.priceGHS && p.priceTag && (
                             <span className={`absolute top-2 right-2 ${p.priceTag} font-display text-xs px-2 py-0.5 rounded-full border border-vibe-navy`}>
                               GHS {p.priceGHS.toLocaleString()}

@@ -5,6 +5,7 @@ import { db } from '../lib/firebase'
 import { useAuth } from '../context/AuthContext'
 import { useTripBoard } from '../context/TripBoardContext'
 import { properties, getTagClass } from '../data/properties'
+import { onImgError } from '../utils/images'
 
 const REACTIONS = ['👍', '🔥', '❓']
 const BASE_URL = 'https://getaway-gh.vercel.app'
@@ -164,7 +165,7 @@ export default function UserProfile() {
                   {/* Photo */}
                   <div className="relative h-48 overflow-hidden rounded-t-xl border-b-2 border-vibe-navy">
                     <Link to={`/property/${p.id}`}>
-                      <img src={p.image} alt={p.name} className="card-img w-full h-full object-cover" />
+                      <img src={p.image} alt={p.name} className="card-img w-full h-full object-cover" onError={onImgError} />
                     </Link>
                     <span className={`absolute top-3 right-3 ${p.priceTag} font-display text-xs px-2.5 py-1 rounded-full border border-vibe-navy`}>
                       GHS {p.priceGHS.toLocaleString()}

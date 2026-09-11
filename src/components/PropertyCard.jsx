@@ -3,6 +3,7 @@ import { useMemo } from 'react'
 import { useTripBoard } from '../context/TripBoardContext'
 import { getTagClass } from '../data/properties'
 import { estimateDriveTime, DEPARTURE_CITIES } from '../utils/driveTime'
+import { onImgError } from '../utils/images'
 
 export default function PropertyCard({ property: p, style, fromCity }) {
   const { isSaved, toggle } = useTripBoard()
@@ -23,7 +24,7 @@ export default function PropertyCard({ property: p, style, fromCity }) {
       {/* Image */}
       <Link to={fromCity ? `/property/${p.id}?from=${encodeURIComponent(fromCity)}` : `/property/${p.id}`}>
         <div className="relative h-52 overflow-hidden border-b-2 border-vibe-navy rounded-t-xl2">
-          <img src={image} alt={p.name} className="card-img w-full h-full object-cover" loading="lazy" />
+          <img src={image} alt={p.name} className="card-img w-full h-full object-cover" loading="lazy" onError={onImgError} />
 
           {p.priceGHS && p.priceTag && (
             <span className={`absolute top-2 right-2 ${p.priceTag} font-display text-xs px-2 py-0.5 rounded-full border border-vibe-navy`}>
