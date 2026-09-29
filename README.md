@@ -6,9 +6,11 @@ AI-powered travel discovery for Ghana. Search by vibe, region, activity, or budg
 
 ## Promo
 
-<a href="motion/getaway-promo.mp4">
-  <img src="motion/getaway-promo.gif" width="300" alt="Getaway.gh promo video" />
-</a>
+<p align="center">
+  <a href="motion/getaway-promo.mp4">
+    <img src="motion/getaway-promo.gif" width="300" alt="Getaway.gh promo video" />
+  </a>
+</p>
 
 A 21.5s vertical (1080×1920) promo, [built in code](motion/) from this app's own
 brand tokens and copy — so it stays in sync with the product. Click through for
