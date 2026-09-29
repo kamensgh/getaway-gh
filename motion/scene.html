@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Getaway.gh — Motion</title>
+<style>
+  @font-face {
+    font-family: 'Black Han Sans';
+    src: url('node_modules/@fontsource/black-han-sans/files/black-han-sans-latin-400-normal.woff2') format('woff2');
+    font-weight: 400; font-display: block;
+  }
+  @font-face {
+    font-family: 'Caveat';
+    src: url('node_modules/@fontsource/caveat/files/caveat-latin-700-normal.woff2') format('woff2');
+    font-weight: 700; font-display: block;
+  }
+  @font-face {
+    font-family: 'Nunito';
+    src: url('node_modules/@fontsource/nunito/files/nunito-latin-700-normal.woff2') format('woff2');
+    font-weight: 700; font-display: block;
+  }
+  @font-face {
+    font-family: 'Nunito';
+    src: url('node_modules/@fontsource/nunito/files/nunito-latin-900-normal.woff2') format('woff2');
+    font-weight: 900; font-display: block;
+  }
+
+  :root {
+    --red:    #E84422;
+    --navy:   #0E1C40;
+    --yellow: #FBBF24;
+    --white:  #FFFFFF;
+    --green:  #16A34A;
+    --pink:   #F9A8D4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { width: 1080px; height: 1920px; overflow: hidden; }
+
+  body {
+    background: var(--red);
+    font-family: 'Nunito', sans-serif;
+    color: var(--navy);
+    position: relative;
+  }
+
+  /* Navy wash that slides over the red for the mid-section */
+  #navyWash {
+    position: absolute; inset: 0;
+    background: var(--navy);
+    transform-origin: bottom center;
+    will-change: transform;
+  }
+
+  .stage { position: absolute; inset: 0; }
+
+  .sparkle {
+    position: absolute;
+    color: var(--white);
+    font-size: 44px;
+    will-change: transform, opacity;
+  }
+
+  /* ---------- Scene 1 : handwritten hook ---------- */
+  #s1 {
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; padding: 0 90px;
+  }
+  #s1 .hook {
+    font-family: 'Caveat', cursive;
+    font-size: 104px;
+    line-height: 1.15;
+    color: var(--yellow);
+    will-change: transform, opacity;
+  }
+
+  /* ---------- Scene 2 : display slam ---------- */
+  #s2 {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  #s2 .line {
+    font-family: 'Black Han Sans', Impact, sans-serif;
+    font-size: 208px;
+    line-height: 0.88;
+    color: var(--white);
+    text-transform: uppercase;
+    letter-spacing: -2px;
+    text-shadow: 10px 10px 0 var(--navy);
+    will-change: transform, opacity;
+  }
+  #s2 .kicker {
+    font-family: 'Caveat', cursive;
+    font-size: 66px;
+    color: var(--yellow);
+    margin-bottom: 26px;
+    will-change: transform, opacity;
+  }
+
+  /* ---------- Scene 3 : AI search ---------- */
+  #s3 {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 0 70px;
+  }
+  #s3 .label {
+    font-family: 'Caveat', cursive;
+    font-size: 62px; color: var(--yellow);
+    margin-bottom: 36px;
+    will-change: transform, opacity;
+  }
+  .pill {
+    display: flex; align-items: center;
+    width: 100%;
+    background: var(--white);
+    border: 5px solid var(--navy);
+    border-radius: 999px;
+    box-shadow: 9px 9px 0 var(--navy);
+    padding: 16px 16px 16px 40px;
+    will-change: transform, opacity;
+  }
+  .pill .spark { font-size: 46px; margin-right: 22px; }
+  .pill .typed {
+    flex: 1; text-align: left;
+    font-size: 40px; font-weight: 700;
+    color: var(--navy);
+    white-space: nowrap; overflow: hidden;
+  }
+  .pill .caret {
+    display: inline-block;
+    width: 4px; height: 44px;
+    background: var(--navy);
+    vertical-align: middle;
+    margin-left: 4px;
+  }
+  .askai {
+    background: var(--red);
+    color: var(--white);
+    font-family: 'Black Han Sans', Impact, sans-serif;
+    font-size: 34px;
+    padding: 22px 44px;
+    border: 5px solid var(--navy);
+    border-radius: 999px;
+    white-space: nowrap;
+    will-change: transform;
+  }
+  #s3 .types {
+    margin-top: 46px;
+    background: var(--yellow);
+    border: 5px solid var(--navy);
+    border-radius: 999px;
+    box-shadow: 7px 7px 0 var(--navy);
+    padding: 22px 54px;
+    font-size: 38px; font-weight: 900;
+    color: var(--navy);
+    will-change: transform, opacity;
+  }
+
+  /* ---------- Scene 4 : vibe chips ---------- */
+  #s4 {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 0 70px;
+  }
+  #s4 .eyebrow {
+    font-family: 'Caveat', cursive;
+    font-size: 66px; color: var(--yellow);
+    margin-bottom: 54px;
+    will-change: transform, opacity;
+  }
+  #s4 .chips {
+    display: flex; flex-wrap: wrap;
+    gap: 26px; justify-content: center;
+  }
+  .chip {
+    background: var(--white);
+    border: 5px solid var(--navy);
+    border-radius: 999px;
+    box-shadow: 6px 6px 0 var(--navy);
+    padding: 22px 40px;
+    font-size: 40px; font-weight: 900;
+    color: var(--navy);
+    white-space: nowrap;
+    will-change: transform, opacity;
+  }
+
+  /* ---------- Scene 5 : the real product ---------- */
+  #s5 {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  #s5 .stats {
+    display: flex; gap: 26px;
+    margin-bottom: 58px;
+  }
+  .stat {
+    background: var(--yellow);
+    border: 5px solid var(--navy);
+    border-radius: 26px;
+    box-shadow: 7px 7px 0 var(--navy);
+    padding: 24px 34px;
+    text-align: center;
+    will-change: transform, opacity;
+  }
+  .stat .num {
+    font-family: 'Black Han Sans', Impact, sans-serif;
+    font-size: 76px; line-height: 1;
+    color: var(--navy);
+  }
+  .stat .cap {
+    font-size: 26px; font-weight: 900;
+    letter-spacing: 1px;
+    color: var(--navy);
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+  /* Browser window rather than a phone frame: the source screenshot is
+     landscape, so a portrait device would either crop the hero or leave
+     a dead band under it. */
+  #s5 .device {
+    width: 880px;
+    border: 8px solid var(--navy);
+    border-radius: 28px;
+    box-shadow: 16px 16px 0 var(--navy);
+    overflow: hidden;
+    background: var(--white);
+    will-change: transform, opacity;
+  }
+  #s5 .chrome {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--white);
+    border-bottom: 5px solid var(--navy);
+    padding: 18px 26px;
+  }
+  #s5 .chrome i {
+    width: 20px; height: 20px; border-radius: 50%;
+    border: 3px solid var(--navy);
+    display: block;
+  }
+  #s5 .chrome .bar {
+    flex: 1; margin-left: 14px;
+    height: 30px; border-radius: 999px;
+    background: #F1E9E4;
+    border: 3px solid var(--navy);
+  }
+  #s5 .device img {
+    width: 100%; display: block;
+  }
+
+  /* ---------- Scene 6 : sign off ---------- */
+  #s6 {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  #s6 .logo {
+    font-family: 'Black Han Sans', Impact, sans-serif;
+    font-size: 150px;
+    color: var(--white);
+    text-shadow: 9px 9px 0 var(--navy);
+    will-change: transform, opacity;
+  }
+  #s6 .logo em { font-style: normal; color: var(--yellow); }
+  #s6 .sub {
+    font-family: 'Caveat', cursive;
+    font-size: 70px; color: var(--white);
+    margin-top: 20px;
+    will-change: transform, opacity;
+  }
+  #s6 .url {
+    margin-top: 58px;
+    background: var(--white);
+    border: 6px solid var(--navy);
+    border-radius: 999px;
+    box-shadow: 9px 9px 0 var(--navy);
+    padding: 26px 62px;
+    font-size: 42px; font-weight: 900;
+    color: var(--navy);
+    will-change: transform, opacity;
+  }
+</style>
+</head>
+<body>
+
+<div id="navyWash"></div>
+
+<!-- sparkles are injected by script -->
+
+<div class="stage" id="s1">
+  <div class="hook">Where in Ghana<br/>are you escaping to?</div>
+</div>
+
+<div class="stage" id="s2">
+  <div class="kicker">the weekend is calling</div>
+  <div class="line" id="s2a">YOUR NEXT</div>
+  <div class="line" id="s2b">GETAWAY</div>
+</div>
+
+<div class="stage" id="s3">
+  <div class="label">just ask, in plain words</div>
+  <div class="pill">
+    <span class="spark">✨</span>
+    <span class="typed" id="typed"></span><span class="caret" id="caret"></span>
+    <span class="askai" id="askai">ASK AI</span>
+  </div>
+  <div class="types">Hotels • Lodges • Beach Houses</div>
+</div>
+
+<div class="stage" id="s4">
+  <div class="eyebrow">what's your getaway style?</div>
+  <div class="chips" id="chips">
+    <div class="chip">🏖️ Beach &amp; Coastal</div>
+    <div class="chip">⛰️ Mountain Views</div>
+    <div class="chip">🥾 Hiking Trails</div>
+    <div class="chip">🌿 Nature &amp; Forest</div>
+    <div class="chip">🌱 Eco Retreat</div>
+    <div class="chip">🛶 Watersports</div>
+    <div class="chip">🏛️ Cultural &amp; Heritage</div>
+    <div class="chip">🍽️ Food &amp; Cuisine</div>
+  </div>
+</div>
+
+<div class="stage" id="s5">
+  <div class="stats" id="stats">
+    <div class="stat"><div class="num" id="n1">0</div><div class="cap">Spots</div></div>
+    <div class="stat"><div class="num" id="n2">0</div><div class="cap">Regions</div></div>
+    <div class="stat"><div class="num" id="n3">0</div><div class="cap">Locations</div></div>
+  </div>
+  <div class="device" id="device">
+    <div class="chrome"><i></i><i></i><i></i><span class="bar"></span></div>
+    <img src="../screenshots/home.png" alt="Getaway.gh" />
+  </div>
+</div>
+
+<div class="stage" id="s6">
+  <div class="logo">Getaway<em>.gh</em></div>
+  <div class="sub">Ghana, every weekend.</div>
+  <div class="url">getaway-gh.vercel.app</div>
+</div>
+
+<script>
+// ---------- timing helpers ----------
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const prog  = (t, s, e) => clamp((t - s) / (e - s), 0, 1);
+const easeOut  = x => 1 - Math.pow(1 - x, 3);
+const easeInOut = x => x < 0.5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2;
+const easeBack = x => {
+  const c1 = 1.70158, c3 = c1 + 1;
+  return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
+};
+
+// Scene windows [in, out]
+const S = {
+  s1: [0.0,  3.2],
+  s2: [3.0,  7.2],
+  s3: [7.0, 11.4],
+  s4: [11.2, 15.2],
+  s5: [15.0, 18.6],
+  s6: [18.4, 21.5],
+};
+const DURATION = 21.5;
+
+// ---------- sparkles ----------
+const SPARKS = [
+  [ 90,  260, 0.0, 46], [ 960, 420, 0.4, 34], [ 150, 1520, 0.9, 40],
+  [ 900, 1650, 1.3, 52], [ 520, 120, 0.6, 30], [ 980, 1080, 1.7, 36],
+  [  70,  980, 2.1, 42], [ 620, 1800, 1.1, 32],
+];
+const sparkEls = SPARKS.map(([x, y, d, size]) => {
+  const el = document.createElement('div');
+  el.className = 'sparkle';
+  el.textContent = '✦';
+  el.style.left = x + 'px';
+  el.style.top  = y + 'px';
+  el.style.fontSize = size + 'px';
+  document.body.appendChild(el);
+  return el;
+});
+
+// Fade a stage in and out around its window
+function stage(el, t, [inT, outT], rise) {
+  const fadeIn  = prog(t, inT, inT + 0.55);
+  const fadeOut = prog(t, outT - 0.45, outT);
+  const vis = fadeIn * (1 - fadeOut);
+  el.style.opacity = vis;
+  if (rise !== false) {
+    const y = (1 - easeOut(fadeIn)) * 60 - easeOut(fadeOut) * 50;
+    el.style.transform = `translateY(${y}px)`;
+  }
+  return vis;
+}
+
+const $ = id => document.getElementById(id);
+const TYPE_TEXT = 'Romantic getaway, 2 nights, not too far';
+
+window.renderFrame = function (t) {
+  // --- background: navy wash covers the chip section ---
+  const washIn  = prog(t, 11.0, 11.6);
+  const washOut = prog(t, 14.9, 15.5);
+  $('navyWash').style.opacity = easeInOut(washIn) * (1 - easeInOut(washOut));
+
+  // --- sparkles: slow float, fade out once the wash arrives ---
+  sparkEls.forEach((el, i) => {
+    const [, , delay] = SPARKS[i];
+    const appear = prog(t, delay, delay + 0.8);
+    const drift  = Math.sin((t + delay * 2) * 0.9) * 14;
+    const spin   = Math.sin((t + delay) * 0.6) * 18;
+    const late   = 1 - prog(t, 10.6, 11.4) * 0.85;
+    el.style.opacity = easeOut(appear) * 0.85 * late;
+    el.style.transform = `translateY(${drift}px) rotate(${spin}deg) scale(${0.6 + easeBack(appear) * 0.4})`;
+  });
+
+  // --- S1 handwritten hook ---
+  const v1 = stage($('s1'), t, S.s1);
+  $('s1').querySelector('.hook').style.transform =
+    `scale(${0.92 + easeOut(prog(t, 0, 1.0)) * 0.08})`;
+
+  // --- S2 display slam, line by line ---
+  stage($('s2'), t, S.s2, false);
+  const kick = prog(t, 3.2, 3.9);
+  $('s2').querySelector('.kicker').style.opacity = easeOut(kick);
+  $('s2').querySelector('.kicker').style.transform =
+    `translateY(${(1 - easeOut(kick)) * 30}px)`;
+  [['s2a', 3.5], ['s2b', 3.8]].forEach(([id, at]) => {
+    const p = prog(t, at, at + 0.7);
+    const el = $(id);
+    el.style.opacity = easeOut(p);
+    el.style.transform =
+      `translateY(${(1 - easeBack(p)) * 90}px) scale(${0.86 + easeBack(p) * 0.14})`;
+  });
+
+  // --- S3 search pill + typing ---
+  stage($('s3'), t, S.s3, false);
+  const lab = prog(t, 7.2, 7.8);
+  $('s3').querySelector('.label').style.opacity = easeOut(lab);
+  const pillP = prog(t, 7.4, 8.1);
+  const pill = $('s3').querySelector('.pill');
+  pill.style.opacity = easeOut(pillP);
+  pill.style.transform =
+    `translateY(${(1 - easeBack(pillP)) * 50}px) scale(${0.92 + easeBack(pillP) * 0.08})`;
+
+  const typeP = prog(t, 8.1, 10.2);
+  const chars = Math.round(typeP * TYPE_TEXT.length);
+  $('typed').textContent = TYPE_TEXT.slice(0, chars);
+  // caret blinks while typing, then holds
+  $('caret').style.opacity = typeP >= 1 ? (Math.floor(t * 2) % 2 ? 0 : 1) : 1;
+
+  // ASK AI pulses once the query is in
+  const pulse = prog(t, 10.2, 10.75);
+  $('askai').style.transform = `scale(${1 + Math.sin(pulse * Math.PI) * 0.16})`;
+
+  const typesP = prog(t, 8.6, 9.3);
+  const typesEl = $('s3').querySelector('.types');
+  typesEl.style.opacity = easeOut(typesP);
+  typesEl.style.transform = `translateY(${(1 - easeBack(typesP)) * 40}px)`;
+
+  // --- S4 vibe chips, staggered pop ---
+  stage($('s4'), t, S.s4, false);
+  const eyeP = prog(t, 11.4, 12.0);
+  const eyebrow = $('s4').querySelector('.eyebrow');
+  eyebrow.style.opacity = easeOut(eyeP);
+  eyebrow.style.transform = `translateY(${(1 - easeOut(eyeP)) * 30}px)`;
+  [...$('chips').children].forEach((chip, i) => {
+    const at = 11.7 + i * 0.11;
+    const p = prog(t, at, at + 0.55);
+    chip.style.opacity = easeOut(p);
+    chip.style.transform =
+      `translateY(${(1 - easeBack(p)) * 46}px) scale(${0.8 + easeBack(p) * 0.2})`;
+  });
+
+  // --- S5 real product + counters ---
+  stage($('s5'), t, S.s5, false);
+  const counts = [[ 'n1', 679, 15.3], ['n2', 16, 15.45], ['n3', 150, 15.6]];
+  counts.forEach(([id, target, at], i) => {
+    const p = prog(t, at, at + 1.1);
+    $(id).textContent = Math.round(easeOut(p) * target) + (id === 'n3' && p >= 1 ? '+' : '');
+    const box = $(id).parentElement;
+    const bp = prog(t, at - 0.1, at + 0.5);
+    box.style.opacity = easeOut(bp);
+    box.style.transform = `translateY(${(1 - easeBack(bp)) * 40}px)`;
+  });
+  const devP = prog(t, 15.5, 16.5);
+  $('device').style.opacity = easeOut(devP);
+  $('device').style.transform =
+    `translateY(${(1 - easeOut(devP)) * 120}px) scale(${0.94 + easeOut(devP) * 0.06})`;
+
+  // --- S6 sign off ---
+  stage($('s6'), t, S.s6, false);
+  const logoP = prog(t, 18.6, 19.4);
+  const logo = $('s6').querySelector('.logo');
+  logo.style.opacity = easeOut(logoP);
+  logo.style.transform = `scale(${0.85 + easeBack(logoP) * 0.15})`;
+  const subP = prog(t, 19.0, 19.7);
+  const sub = $('s6').querySelector('.sub');
+  sub.style.opacity = easeOut(subP);
+  sub.style.transform = `translateY(${(1 - easeOut(subP)) * 28}px)`;
+  const urlP = prog(t, 19.4, 20.1);
+  const url = $('s6').querySelector('.url');
+  url.style.opacity = easeOut(urlP);
+  url.style.transform =
+    `translateY(${(1 - easeBack(urlP)) * 40}px) scale(${0.9 + easeBack(urlP) * 0.1})`;
+};
+
+window.SCENE_DURATION = DURATION;
+window.renderFrame(0);
+</script>
+</body>
+</html>
