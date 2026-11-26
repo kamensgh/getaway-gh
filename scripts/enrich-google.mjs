@@ -11,7 +11,16 @@
 import { readFileSync, writeFileSync, existsSync } from 'fs'
 import { createRequire } from 'module'
 
-const KEY = 'AIzaSyDXa6CdwiN8M6tkYNbCOg5SOtslmABIQ5E'
+// API key comes from the environment or .env.local (git-ignored). Never hard-code keys.
+const KEY = process.env.GOOGLE_PLACES_API_KEY || (() => {
+  if (!existsSync('./.env.local')) return null
+  const m = readFileSync('./.env.local', 'utf8').match(/^GOOGLE_PLACES_API_KEY=(.+)$/m)
+  return m ? m[1].trim() : null
+})()
+if (!KEY) {
+  console.error('Missing GOOGLE_PLACES_API_KEY. Set it in the environment or in .env.local (run from the repo root).')
+  process.exit(1)
+}
 const PROXY = '/api/place-photo'
 const MAX_PHOTOS = 8
 const DELAY = 300  // ms between calls to stay under rate limits
